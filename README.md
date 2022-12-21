@@ -61,5 +61,8 @@ HTTP Header
 ## Получить секрет
 - GET `/api/v1/secret/{secretID}`
 
+## Список секретов
+- GET `/api/v1/secret/list`
+
 ##  Удалить секрет
 - DELETE `/api/v1/secret/{secretID}`
