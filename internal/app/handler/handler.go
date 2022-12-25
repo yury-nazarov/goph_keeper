@@ -6,21 +6,21 @@ import (
 	"net/http"
 
 	"go.uber.org/zap"
-
 )
 
 type Controller struct {
-	db 		repository.Repository
-	cgf 	options.Config
-	log 	*zap.Logger
-
+	db    repository.DB
+	cache repository.Cache
+	cgf   options.Config
+	log   *zap.Logger
 }
 
-func NewController(db repository.Repository, cfg options.Config, log *zap.Logger) *Controller {
+func NewController(db repository.DB, cache repository.Cache, cfg options.Config, log *zap.Logger) *Controller {
 	c := &Controller{
-		db: 	db,
-		cgf: 	cfg,
-		log: 	log,
+		db:    db,
+		cache: cache,
+		cgf:   cfg,
+		log:   log,
 	}
 	return c
 }

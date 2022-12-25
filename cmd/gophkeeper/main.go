@@ -14,14 +14,15 @@ import (
 
 // объявляем используемые зависимости и общие переменные
 var (
-	app 	*application.Application
-	repo 	repository.Repository
-	log 	*zap.Logger
-	cfg 	options.Config
-	err 	error
+	app   *application.Application
+	db    repository.DB
+	cache repository.Cache
+	log   *zap.Logger
+	cfg   options.Config
+	err   error
 )
 
-func main(){
+func main() {
 	// Инициируем логер c нужным конфигом
 	log = logger.New()
 
@@ -36,24 +37,30 @@ func main(){
 	app.Run()
 }
 
-
 // onStart запускает проект
 func onStart() {
-	// Инициируем репозиторий
-	repo, err = repository.New()
+	// Инициализируем подключение к БД
+	db, err = repository.NewPostgres()
 	if err != nil {
-		log.Fatal("can't init repository", zap.String("error", err.Error()))
+		log.Fatal("can't init DB storage")
 	}
+	_ = db
+
+	// Инициализируем подключение к кешу где хранятся токены
+	cache, err = repository.NewCache(log)
+	if err != nil {
+		log.Fatal("can't init cache storage")
+	}
+	_ = cache
 
 	// Инициируем слой с бизнес логикой
 
-
 	// Инициируем контроллер и роутер
-	c := handler.NewController(repo, cfg, log)
+	c := handler.NewController(db, cache, cfg, log)
 	r := handler.NewRouter(c, log)
 
 	// Запускаем веб сервер
-	go func(){
+	go func() {
 		srv := http.Server{Addr: cfg.RunAddress, Handler: r}
 		if err = srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatal("HTTP Server ListenAndServe", zap.String("err", err.Error()))
