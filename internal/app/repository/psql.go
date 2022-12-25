@@ -1,5 +1,7 @@
 package repository
 
+import "go.uber.org/zap"
+
 // Реализация создания нового подклчения в PSQL
 
 // DB интерфейс для работы с Psql
@@ -15,10 +17,14 @@ type DB interface {
 }
 
 type psql struct {
+	log *zap.Logger
 }
 
-func NewPostgres() (*psql, error) {
-	p := &psql{}
+func NewPostgres(log *zap.Logger) (*psql, error) {
+	p := &psql{
+		log: log,
+	}
+	log.Info("DB storage init success")
 	return p, nil
 }
 

@@ -9,18 +9,18 @@ import (
 )
 
 type Controller struct {
-	db    repository.DB
-	cache repository.Cache
-	cgf   options.Config
-	log   *zap.Logger
+	db       repository.DB
+	sessions repository.Sessions
+	cgf      options.Config
+	log      *zap.Logger
 }
 
-func NewController(db repository.DB, cache repository.Cache, cfg options.Config, log *zap.Logger) *Controller {
+func NewController(db repository.DB, sessions repository.Sessions, cfg options.Config, log *zap.Logger) *Controller {
 	c := &Controller{
-		db:    db,
-		cache: cache,
-		cgf:   cfg,
-		log:   log,
+		db:       db,
+		sessions: sessions,
+		cgf:      cfg,
+		log:      log,
 	}
 	return c
 }

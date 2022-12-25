@@ -4,35 +4,36 @@ import "go.uber.org/zap"
 
 // Реализация Inmemory Cache в виде мапы
 
-// Cache - интерфейс для работы с кешем
-type Cache interface {
+// Sessions - интерфейс для работы с кешем
+type Sessions interface {
 	AddToken() error
 	GetToken() error
 	Close()
 }
 
-type inmemoryCache struct {
+type inmemorySessionStorage struct {
 	store map[int]string
 	log   zap.Logger
 }
 
-func NewCache(log *zap.Logger) (*inmemoryCache, error) {
-	ic := &inmemoryCache{
+func NewSessions(log *zap.Logger) (*inmemorySessionStorage, error) {
+	ic := &inmemorySessionStorage{
 		store: make(map[int]string),
 		log:   *log,
 	}
+	log.Info("Sessions storage init success")
 	return ic, nil
 }
 
-func (c *inmemoryCache) AddToken() error {
+func (c *inmemorySessionStorage) AddToken() error {
 	return nil
 }
 
-func (c *inmemoryCache) GetToken() error {
+func (c *inmemorySessionStorage) GetToken() error {
 	return nil
 }
 
-func (c *inmemoryCache) Close() {
+func (c *inmemorySessionStorage) Close() {
 	c.log.Info("close inmemory cache storage")
 	c.store = nil
 }
