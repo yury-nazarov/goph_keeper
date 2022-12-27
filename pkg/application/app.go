@@ -1,38 +1,40 @@
 package application
 
 import (
-	"github.com/yury-nazarov/goph_keeper/internal/options"
-	"go.uber.org/zap"
 	"io"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/yury-nazarov/goph_keeper/internal/options"
+
+	"go.uber.org/zap"
 )
 
 // Application - стуктура приложения
 type Application struct {
 	// логер для приложения
-	log 	 		*zap.Logger
+	log *zap.Logger
 	// Конфигурация приложения
-	cfg 			options.Config
+	cfg options.Config
 	// Запускает приложение
-	onStart 		func()
+	onStart func()
 	// Завершает работу приложения
-	onShutDown  	func()
+	onShutDown func()
 	// Канал в котором ожидаем системный вызов о завершении работы приложения
-	signalChannel 	chan os.Signal
+	signalChannel chan os.Signal
 	// Закрытие канала означет завершение работы приложения
-	exitChannel 	chan struct{}
+	exitChannel chan struct{}
 	// закрываемые при завершении структуры
-	closers 		[]io.Closer
+	closers []io.Closer
 }
 
 // New инициирует новый экзепляр приложения
-func New(log *zap.Logger, cfg options.Config, onStart func(), onShutDown func()) *Application{
+func New(log *zap.Logger, cfg options.Config, onStart func(), onShutDown func()) *Application {
 	app := &Application{
-		log: log,
-		cfg: cfg,
-		onStart: onStart,
+		log:        log,
+		cfg:        cfg,
+		onStart:    onStart,
 		onShutDown: onShutDown,
 	}
 	// Канал для сигнализации graceful shutdown
@@ -57,7 +59,6 @@ func (a *Application) Run() {
 	}
 }
 
-
 // initSignals перехватывает сигнал для остановки приложения
 func (a *Application) initSignals() {
 	// Канал ожидает системный вызов о завершении работы
@@ -70,7 +71,7 @@ func (a *Application) initSignals() {
 
 	for {
 		select {
-		case s := <- a.signalChannel:
+		case s := <-a.signalChannel:
 			switch s {
 			case syscall.SIGTERM, syscall.SIGINT, syscall.SIGKILL:
 				// Получили сигнал, закрываем канал, подготавливаем приложение к завершению
@@ -84,12 +85,19 @@ func (a *Application) initSignals() {
 	}
 }
 
-// ExecuteClosers - завершает работу всех объектов в []app.Closers
+// ExecuteClosers - завершает работу всех объектов в []app.Closers. Исполняет в обратном порядке.
 func (a *Application) ExecuteClosers() {
-	a.log.Info("Закрываем, все, что должно быть закрыто")
+	for i := len(a.closers) - 1; i >= 0; i-- {
+		c := a.closers[i]
+		err := c.Close()
+		if err != nil {
+			a.log.Warn("can't execute Close()", zap.String("error", err.Error()))
+		}
+	}
+	a.log.Info("Close connections")
 }
 
-// AddClosers - добавляет io.Closer в closers
+// AddClosers - добавляет io.Closer в []closers
 func (a *Application) AddClosers(c ...io.Closer) {
 	a.closers = append(a.closers, c...)
 }

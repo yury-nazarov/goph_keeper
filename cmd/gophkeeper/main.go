@@ -40,10 +40,11 @@ func main() {
 // onStart запускает проект
 func onStart() {
 	// Инициализируем подключение к БД
-	db, err = repository.NewPostgres(log)
+	db, err = repository.NewPostgres(log, cfg.DB)
 	if err != nil {
-		log.Fatal("can't init DB storage")
+		log.Fatal("can't init DB storage", zap.String("error", err.Error()))
 	}
+	app.AddClosers(db)
 	_ = db
 
 	// Инициализируем подключение к кешу где хранятся токены
