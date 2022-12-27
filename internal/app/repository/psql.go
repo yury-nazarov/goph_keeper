@@ -1,14 +1,16 @@
 package repository
 
 import (
-	"database/sql"
 	"fmt"
+
+	"database/sql"
+
 	_ "github.com/jackc/pgx/v4/stdlib"
 	"github.com/pressly/goose"
 	"go.uber.org/zap"
 )
 
-// Реализация создания нового подклчения в PSQL
+// Реализация создания нового подклчения к БД
 
 // DB интерфейс для работы с Psql
 type DB interface {
@@ -20,7 +22,6 @@ type DB interface {
 	ListSecret(userID int) error
 	DeleteSecret(userID int, id int) error
 	Close() error
-	//io.Closer
 }
 
 type psql struct {

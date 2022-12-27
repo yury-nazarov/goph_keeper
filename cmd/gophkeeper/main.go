@@ -45,7 +45,6 @@ func onStart() {
 		log.Fatal("can't init DB storage", zap.String("error", err.Error()))
 	}
 	app.AddClosers(db)
-	_ = db
 
 	// Инициализируем подключение к кешу где хранятся токены
 	sessions, err = repository.NewSessions(log)
