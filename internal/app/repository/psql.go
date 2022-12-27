@@ -44,7 +44,7 @@ func NewPostgres(log *zap.Logger, connString string) (*psql, error) {
 	}
 
 	// Формируем объект для работы с БД
-	p := &psql{db: db, log: log, info: "psql connection"}
+	p := &psql{db: db, log: log}
 
 	// Запускаем миграции
 	err = p.migrations()
