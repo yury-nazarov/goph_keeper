@@ -1,39 +1,56 @@
 package repository
 
-import "go.uber.org/zap"
+import (
+	"fmt"
+	"go.uber.org/zap"
+	"sync"
+)
 
-// Реализация Inmemory Cache в виде мапы
+// Реализация Inmemory Cache в виде мапы.
 
 // Sessions - интерфейс для работы с кешем
 type Sessions interface {
-	AddToken() error
-	GetToken() error
-	Close()
+	AddToken(token string, userID int) error
+	GetUserID(token string) (int, error)
+	Close() error
 }
 
 type inmemorySessionStorage struct {
-	store map[int]string
+	store map[string]int
+	mu    sync.RWMutex
 	log   zap.Logger
 }
 
+// NewSessions создает inmemory cache для хранения токенов залогиненых пользователей
 func NewSessions(log *zap.Logger) (*inmemorySessionStorage, error) {
 	ic := &inmemorySessionStorage{
-		store: make(map[int]string),
+		store: make(map[string]int),
 		log:   *log,
 	}
 	log.Info("Sessions storage init success")
 	return ic, nil
 }
 
-func (c *inmemorySessionStorage) AddToken() error {
+// AddToken добавить token и соответствующий ему userID в кеш сессий
+func (c *inmemorySessionStorage) AddToken(token string, userID int) error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.store[token] = userID
 	return nil
 }
 
-func (c *inmemorySessionStorage) GetToken() error {
-	return nil
+// GetUserID получить userID по token
+func (c *inmemorySessionStorage) GetUserID(token string) (int, error) {
+	userID, ok := c.store[token]
+	if !ok {
+		return 0, fmt.Errorf("userID not found")
+	}
+	return userID, nil
 }
 
-func (c *inmemorySessionStorage) Close() {
+// Close завершает работу с inmemory cache
+func (c *inmemorySessionStorage) Close() error {
 	c.log.Info("close inmemory cache storage")
 	c.store = nil
+	return nil
 }

@@ -46,12 +46,12 @@ func onStart() {
 	}
 	app.AddClosers(db)
 
-	// Инициализируем подключение к кешу где хранятся токены
+	// Инициализируем подключение к кешу сессий для для хранения токенов
 	sessions, err = repository.NewSessions(log)
 	if err != nil {
-		log.Fatal("can't init cache storage")
+		log.Fatal("can't init session cache", zap.String("error", err.Error()))
 	}
-	_ = sessions
+	app.AddClosers(sessions)
 
 	// Инициируем слой с бизнес логикой
 
