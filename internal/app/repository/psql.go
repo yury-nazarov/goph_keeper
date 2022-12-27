@@ -25,9 +25,8 @@ type DB interface {
 }
 
 type psql struct {
-	db   *sql.DB
-	log  *zap.Logger
-	info string
+	db  *sql.DB
+	log *zap.Logger
 }
 
 // NewPostgres  инициирует подключение к БД
