@@ -5,6 +5,7 @@ import (
 
 	"github.com/yury-nazarov/goph_keeper/internal/app/handler"
 	"github.com/yury-nazarov/goph_keeper/internal/app/repository"
+	"github.com/yury-nazarov/goph_keeper/internal/app/service/auth"
 	"github.com/yury-nazarov/goph_keeper/internal/options"
 	"github.com/yury-nazarov/goph_keeper/pkg/application"
 	"github.com/yury-nazarov/goph_keeper/pkg/logger"
@@ -53,10 +54,13 @@ func onStart() {
 	}
 	app.AddClosers(sessions)
 
-	// Инициируем слой с бизнес логикой
+	// Инициируем слой с бизнес логикой: Авторизация
+	auth := auth.New(log, sessions, db)
+	_ = auth
+	// Инициируем слой с бизнес логикой: Работа с секретами
 
 	// Инициируем контроллер и роутер
-	c := handler.NewController(db, sessions, cfg, log)
+	c := handler.NewController(db, sessions, cfg, log, auth)
 	r := handler.NewRouter(c, log)
 
 	// Запускаем веб сервер

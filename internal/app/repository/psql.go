@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"context"
+	"errors"
 	"fmt"
 
 	"database/sql"
@@ -14,7 +16,9 @@ import (
 
 // DB интерфейс для работы с Psql
 type DB interface {
-	SignUp() error
+	UserExist(ctx context.Context, login string) (bool, error)
+	CreateUser(ctx context.Context, login string, password string) (int, error)
+	///
 	SignIn() error
 	SignOut() error
 	CreateSecret(userID int) error
@@ -65,9 +69,35 @@ func (p *psql) migrations() error {
 	return nil
 }
 
-// SignUp регистрация пользователя
-func (p *psql) SignUp() error {
-	return nil
+// UserExist проверяет наличие пользвоателя в БД, вернет:
+//			 true, nil -  если пользователь уже есть в БД
+//           false, nil - если пользователя нет в БД
+//			 false, err - если произошла ошибка во время выполнения запроса
+func (p *psql) UserExist(ctx context.Context, login string) (bool, error) {
+	var loginFromDB string
+	err := p.db.QueryRowContext(ctx, `SELECT login FROM app_user WHERE login=$1 LIMIT 1`, login).Scan(&loginFromDB)
+	// Записи нет в БД
+	if errors.Is(err, sql.ErrNoRows) {
+		return false, nil
+	}
+	if err != nil {
+		return false, err
+	}
+	if len(login) > 0 {
+		return true, nil
+	}
+	return false, nil
+}
+
+// CreateUser создает нового пользователя
+func (p *psql) CreateUser(ctx context.Context, login string, password string) (int, error) {
+	var userID int
+	err := p.db.QueryRowContext(ctx,
+		`INSERT INTO app_user (login, password) VALUES ($1, $2) RETURNING id`, login, password).Scan(&userID)
+	if err != nil {
+		return 0, fmt.Errorf("create new user fail: %s", err.Error())
+	}
+	return userID, nil
 }
 
 // SignIn логин пользователя

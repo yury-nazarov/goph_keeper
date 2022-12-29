@@ -7,7 +7,6 @@ import (
 	"go.uber.org/zap"
 )
 
-
 func NewRouter(c *Controller, log *zap.Logger) http.Handler {
 	r := chi.NewRouter()
 
@@ -17,6 +16,7 @@ func NewRouter(c *Controller, log *zap.Logger) http.Handler {
 	r.Get("/version", c.Version)
 	r.Route("/api/v1", func(r chi.Router) {
 		r.Get("/version", c.Version)
+		r.Post("/signup", c.SignUp)
 	})
 	return r
 }
