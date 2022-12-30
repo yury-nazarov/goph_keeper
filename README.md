@@ -4,6 +4,23 @@ GophKeeper представляет собой клиент-серверную �
 позволяющую пользователю надёжно и безопасно хранить логины, 
 пароли, бинарные данные и прочую приватную информацию.
 
+# Локальный запуск приложения
+
+Запустить Psql из docker-compose в директории `deployments`
+```shell
+docker-compose up
+```
+
+Запустить сервер с ключами 
+```shell
+go run cmd/gophkeeper/main.go -a 127.0.0.1:8080 -d "host=localhost port=5432 user=gop_keeper_dev password=gop_keeper_dev dbname=gop_keeper_dev sslmode=disable connect_timeout=5"
+```
+или переменными окружения
+```shell
+export RUN_ADDRESS="127.0.0.1:8080"
+export DATABASE_URI="host=localhost port=5432 user=gop_keeper_dev password=gop_keeper_dev dbname=gop_keeper_dev sslmode=disable connect_timeout=5"
+go run cmd/gophkeeper/main.go
+```
 
 # HTTP API сервиса
 
@@ -24,53 +41,88 @@ POST `/api/v1/auth/signup`
   ```
   HTTP Authorization: {{Token}}
   ```
+- 400 - не верный формат зароса
 - 409 - пользователь уже существует
 - 500 - внутренняя ошибка сервера
 
-## Логин пользователя
-- POST `/api/v1/auth/signin`
+## Вход пользователя
+**Request**
+
+POST `/api/v1/auth/signin`
 ```json
 {
   "login": "example_login",
   "password": "example_pwd"
 }
 ```
+
+**Response**
 - 201 - пользователь аутентифицирован
-```json
-{
-  "token": "1q2w3e4r5t"
-}
-```
+  ```
+  HTTP Authorization: {{Token}}
+  ```
 - 404 - пользователь не найден
 - 409 - пользователь уже существует
 - 500 - внутренняя ошибка сервера
 
-## Разлогинится
-- DELETE `/api/v1/auth/signout/`
+## Выход пользователя
+
+**Request**
+
+DELETE `/api/v1/auth/signout/`
 ```
-HTTP Header 
-     Token: "1q2w3e4r5t"
+HTTP Authorizations: {{Token}}
 ```
+
+**Response**
+
+- 200 - пользовательская сессия удалена
 
 ## Создать секрет
-- POST `/api/v1/secret/create`
+
+**Request**
+
+POST `/api/v1/secret/create`
 ```
-  HTTP Header 
-       Token: "1q2w3e4r5t"
+HTTP Authorization: {{Token}}
 ```
-```json
-{
-  // ???
-}
-```
+
+**Response**
+
+TODO
+
 ## Обновить секрет
-- PUT `/api/v1/secret/update`
+
+**Request**
+
+PUT `/api/v1/secret/update`
+
+**Response**
 
 ## Получить секрет
-- GET `/api/v1/secret/{secretID}`
+
+**Request**
+
+GET `/api/v1/secret/{secretID}`
+
+**Response**
+
+TODO
 
 ## Список секретов
-- GET `/api/v1/secret/list`
+
+**Request**
+
+GET `/api/v1/secret/list`
+
+**Response**
+
+TODO
 
 ##  Удалить секрет
-- DELETE `/api/v1/secret/{secretID}`
+
+**Request**
+
+DELETE `/api/v1/secret/{secretID}`
+
+**Response**
