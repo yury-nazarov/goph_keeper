@@ -68,3 +68,18 @@ func (c *Controller) SignUp(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Authorization", user.Token)
 	w.WriteHeader(http.StatusCreated)
 }
+
+// SignIn - аутентификация пользователя
+func (c *Controller) SignIn(w http.ResponseWriter, r *http.Request) {
+	var user models.User
+	// Извлекаем login, pwd из HTTP запроса
+	if err = tools.JSONUnmarshal(r, &user); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	// Аутентифицируем пользователя
+	err = c.auth.UserLogIn(r.Context(), &user)
+	if err != nil {
+		//
+	}
+}

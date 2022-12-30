@@ -2,10 +2,10 @@ package repository
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
-
-	"database/sql"
+	"github.com/yury-nazarov/goph_keeper/internal/app/models"
 
 	_ "github.com/jackc/pgx/v4/stdlib"
 	"github.com/pressly/goose"
@@ -18,6 +18,7 @@ import (
 type DB interface {
 	UserExist(ctx context.Context, login string) (bool, error)
 	CreateUser(ctx context.Context, login string, password string) (int, error)
+	UserIsValid(ctx context.Context, user models.User) error
 	///
 	SignIn() error
 	SignOut() error
@@ -100,9 +101,22 @@ func (p *psql) CreateUser(ctx context.Context, login string, password string) (i
 	return userID, nil
 }
 
-// SignIn логин пользователя
-func (p *psql) SignIn() error {
-	return nil
+// UserIsValid проверяет валидный логин пароль для пользователя
+func (p *psql) UserIsValid(ctx context.Context, user models.User) error {
+	var loginFroDB string
+	var pwdFromDB string
+	err := p.db.QueryRowContext(ctx, `SELECT login FROM app_user WHERE login=$1, password=$2 LIMIT 1`, user.Login, user.Password).Scan(&loginFroDB, &pwdFromDB)
+	// Записи нет в БД
+	if errors.Is(err, sql.ErrNoRows) {
+		return err
+	}
+	if err != nil {
+		return err
+	}
+	if user.Login == loginFroDB && user.Password == loginFroDB {
+		return nil
+	}
+	return fmt.Errorf("")
 }
 
 // SignOut логаут пользователя

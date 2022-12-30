@@ -17,6 +17,7 @@ import (
 
 type Auth interface {
 	RegisterUser(ctx context.Context, user *models.User) error
+	UserLogIn(ctx context.Context, user *models.User) error
 }
 
 // auth структурка для работы модуля аутентификации/авторизации
@@ -75,6 +76,16 @@ func (a *auth) RegisterUser(ctx context.Context, user *models.User) error {
 		msg = fmt.Sprintf("can't add token to session: %s", err.Error())
 		a.log.Warn(msg)
 		return tools.NewErr500(msg)
+	}
+	return nil
+}
+
+// UserLogIn - описывает все процедуры необходимые для входа пользователя
+func (a *auth) UserLogIn(ctx context.Context, user models.User) error {
+	user.Password = hashPassword(user.Password)
+	err := a.db.UserIsValid(ctx, user)
+	if err != nil {
+
 	}
 	return nil
 }
