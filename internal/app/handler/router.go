@@ -12,11 +12,12 @@ func NewRouter(c *Controller, log *zap.Logger) http.Handler {
 
 	// Аутентификация
 	// Роутинг
-	r.Use(mwTokenAuth())
+	//r.Use(mwTokenAuth())
 	r.Get("/version", c.Version)
 	r.Route("/api/v1", func(r chi.Router) {
 		r.Get("/version", c.Version)
 		r.Post("/signup", c.SignUp)
+		r.Post("/signin", c.SignIn)
 	})
 	return r
 }

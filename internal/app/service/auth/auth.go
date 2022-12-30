@@ -80,12 +80,33 @@ func (a *auth) RegisterUser(ctx context.Context, user *models.User) error {
 	return nil
 }
 
-// UserLogIn - описывает все процедуры необходимые для входа пользователя
-func (a *auth) UserLogIn(ctx context.Context, user models.User) error {
-	user.Password = hashPassword(user.Password)
-	err := a.db.UserIsValid(ctx, user)
-	if err != nil {
+// UserLogIn - описывает процедуру входа пользователя
+func (a *auth) UserLogIn(ctx context.Context, user *models.User) error {
+	var err error
+	var msg string
 
+	user.Password = hashPassword(user.Password)
+	user.ID, err = a.db.UserIsValid(ctx, *user)
+	if err != nil {
+		msg = fmt.Sprintf("can't find login and password: %s", err.Error())
+		a.log.Info(msg)
+		return tools.NewErr401(msg)
+	}
+
+	// Создаем токен
+	user.Token, err = a.createToken()
+	if err != nil {
+		msg = fmt.Sprintf("can't create token: %s", err.Error())
+		a.log.Warn(msg)
+		return tools.NewErr500(msg)
+	}
+
+	// Логинем пользователя
+	err = a.sessions.AddToken(ctx, user.Token, user.ID)
+	if err != nil {
+		msg = fmt.Sprintf("can't add token to session: %s", err.Error())
+		a.log.Warn(msg)
+		return tools.NewErr500(msg)
 	}
 	return nil
 }

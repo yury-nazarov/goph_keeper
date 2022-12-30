@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+
 	"github.com/yury-nazarov/goph_keeper/internal/app/models"
 
 	_ "github.com/jackc/pgx/v4/stdlib"
@@ -18,9 +19,8 @@ import (
 type DB interface {
 	UserExist(ctx context.Context, login string) (bool, error)
 	CreateUser(ctx context.Context, login string, password string) (int, error)
-	UserIsValid(ctx context.Context, user models.User) error
+	UserIsValid(ctx context.Context, user models.User) (int, error)
 	///
-	SignIn() error
 	SignOut() error
 	CreateSecret(userID int) error
 	UpdateSecret(userID int, id int) error
@@ -102,21 +102,19 @@ func (p *psql) CreateUser(ctx context.Context, login string, password string) (i
 }
 
 // UserIsValid проверяет валидный логин пароль для пользователя
-func (p *psql) UserIsValid(ctx context.Context, user models.User) error {
-	var loginFroDB string
-	var pwdFromDB string
-	err := p.db.QueryRowContext(ctx, `SELECT login FROM app_user WHERE login=$1, password=$2 LIMIT 1`, user.Login, user.Password).Scan(&loginFroDB, &pwdFromDB)
+// 				вернет nil - если УЗ принаделжит пользователю
+func (p *psql) UserIsValid(ctx context.Context, user models.User) (int, error) {
+	err := p.db.QueryRowContext(ctx,
+		`SELECT id FROM app_user WHERE login=$1 and password=$2 LIMIT 1`, user.Login, user.Password).Scan(&user.ID)
 	// Записи нет в БД
 	if errors.Is(err, sql.ErrNoRows) {
-		return err
+		return 0, err
 	}
 	if err != nil {
-		return err
+		return 0, err
 	}
-	if user.Login == loginFroDB && user.Password == loginFroDB {
-		return nil
-	}
-	return fmt.Errorf("")
+	// если запись найдена по логину и хешу пароля, то считаем, что учетные данные валидны
+	return user.ID, nil
 }
 
 // SignOut логаут пользователя

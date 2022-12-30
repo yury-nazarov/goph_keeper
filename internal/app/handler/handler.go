@@ -2,6 +2,7 @@ package handler
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/yury-nazarov/goph_keeper/internal/app/models"
@@ -16,6 +17,7 @@ import (
 // Общие переменные для хендлеров
 var (
 	err    error
+	err401 *tools.Err401
 	err409 *tools.Err409
 	err500 *tools.Err500
 )
@@ -79,7 +81,15 @@ func (c *Controller) SignIn(w http.ResponseWriter, r *http.Request) {
 	}
 	// Аутентифицируем пользователя
 	err = c.auth.UserLogIn(r.Context(), &user)
-	if err != nil {
-		//
+	if errors.As(err, &err401) {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
 	}
+	if errors.As(err, &err500) {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	c.log.Debug(fmt.Sprintf("userID: %d got token: %s", user.ID, user.Token))
+	w.Header().Set("Authorization", user.Token)
+	w.WriteHeader(http.StatusOK)
 }
