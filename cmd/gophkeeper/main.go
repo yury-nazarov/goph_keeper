@@ -59,9 +59,9 @@ func onStart() {
 	_ = auth
 	// Инициируем слой с бизнес логикой: Работа с секретами
 
-	// Инициируем контроллер и роутер
+	// Инициируем хендлер контроллер и роутер
 	c := handler.NewController(db, sessions, cfg, log, auth)
-	r := handler.NewRouter(c, log)
+	r := handler.NewRouter(c)
 
 	// Запускаем веб сервер
 	go func() {

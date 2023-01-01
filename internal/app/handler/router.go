@@ -4,21 +4,28 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
-	"go.uber.org/zap"
+
 )
 
-func NewRouter(c *Controller, log *zap.Logger) http.Handler {
+func NewRouter(c *Controller) http.Handler {
 	r := chi.NewRouter()
 
-	// Аутентификация
 	// Роутинг
-	//r.Use(mwTokenAuth())
 	r.Get("/version", c.Version)
 	r.Route("/api/v1", func(r chi.Router) {
-		r.Get("/version", c.Version)
-		r.Post("/signup", c.SignUp)
-		r.Post("/signin", c.SignIn)
-		r.Delete("/signout", c.SignOut)
+		r.Route("/auth", func(r chi.Router) {
+			r.Post("/signup", c.SignUp)
+			r.Post("/signin", c.SignIn)
+			r.Group(func(r chi.Router) {
+				r.Use(mwTokenAuth(c))
+				r.Delete("/signout", c.SignOut)
+			})
+		})
+		r.Route("/secrets", func(r chi.Router) {
+			// TODO
+		})
+
+
 
 	})
 	return r
