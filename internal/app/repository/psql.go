@@ -96,7 +96,7 @@ func (p *psql) CreateUser(ctx context.Context, login string, password string) (i
 	err := p.db.QueryRowContext(ctx,
 		`INSERT INTO app_user (login, password) VALUES ($1, $2) RETURNING id`, login, password).Scan(&userID)
 	if err != nil {
-		return 0, fmt.Errorf("create new user fail: %s", err.Error())
+		return 0, fmt.Errorf(err.Error())
 	}
 	return userID, nil
 }

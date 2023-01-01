@@ -52,6 +52,8 @@ func (c *inmemorySessionStorage) GetUserID(ctx context.Context, token string) (i
 
 // DeleteToken удаляет токен из активных сессий
 func (c *inmemorySessionStorage) DeleteToken(ctx context.Context, token string) error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
 	delete(c.store, token)
 	return nil
 }

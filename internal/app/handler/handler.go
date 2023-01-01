@@ -2,7 +2,6 @@ package handler
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 
 	"github.com/yury-nazarov/goph_keeper/internal/app/models"
@@ -90,7 +89,6 @@ func (c *Controller) SignIn(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	c.log.Debug(fmt.Sprintf("userID: %d got token: %s", user.ID, user.Token))
 	w.Header().Set("Authorization", user.Token)
 	w.WriteHeader(http.StatusOK)
 }
@@ -104,9 +102,11 @@ func (c *Controller) SignOut(w http.ResponseWriter, r *http.Request) {
 	err = c.auth.LogOutUser(r.Context(), token)
 	if errors.As(err, &err404) {
 		w.WriteHeader(http.StatusNotFound)
+		return
 	}
 	if errors.As(err, &err500) {
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 	// Пользователь успешно удален
 	w.WriteHeader(http.StatusOK)
