@@ -20,15 +20,10 @@ type DB interface {
 	UserExist(ctx context.Context, login string) (bool, error)
 	CreateUser(ctx context.Context, login string, password string) (int, error)
 	UserIsValid(ctx context.Context, user models.User) (int, error)
-	///
-	SignOut() error
-	CreateSecret(userID int) error
-	UpdateSecret(userID int, id int) error
-	ListSecret(userID int) error
-	DeleteSecret(userID int, id int) error
 	Close() error
 }
 
+// psql описывает поля необходимые для работы с БД
 type psql struct {
 	db  *sql.DB
 	log *zap.Logger
@@ -115,31 +110,6 @@ func (p *psql) UserIsValid(ctx context.Context, user models.User) (int, error) {
 	}
 	// если запись найдена по логину и хешу пароля, то считаем, что учетные данные валидны
 	return user.ID, nil
-}
-
-// SignOut логаут пользователя
-func (p *psql) SignOut() error {
-	return nil
-}
-
-// CreateSecret создать новый секрет
-func (p *psql) CreateSecret(userID int) error {
-	return nil
-}
-
-// UpdateSecret обновить секрет по id
-func (p *psql) UpdateSecret(userID int, id int) error {
-	return nil
-}
-
-// ListSecret список секретов для текущего пользователя
-func (p *psql) ListSecret(userID int) error {
-	return nil
-}
-
-// DeleteSecret удалить секрет
-func (p *psql) DeleteSecret(userID int, id int) error {
-	return nil
 }
 
 // Close закрываем соединение к БД
