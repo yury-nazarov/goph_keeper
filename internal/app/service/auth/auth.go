@@ -45,8 +45,8 @@ func (a *auth) RegisterUser(ctx context.Context, user *models.User) error {
 	if err != nil {
 		a.log.Warn("Сan`t check user exist",
 			zap.String("method", "Auth.RegisterUser"),
-			zap.String("error", err.Error()),
-			zap.String("user.Login", user.Login))
+			zap.String("user.Login", user.Login),
+			zap.String("error", err.Error()))
 		return tools.NewErr500("")
 	}
 	if ok {
@@ -63,8 +63,8 @@ func (a *auth) RegisterUser(ctx context.Context, user *models.User) error {
 	if err != nil {
 		a.log.Warn("Сan`t create new user",
 			zap.String("method", "Auth.RegisterUser"),
-			zap.String("error", err.Error()),
-			zap.String("user.Login", user.Login))
+			zap.String("user.Login", user.Login),
+			zap.String("error", err.Error()))
 		return tools.NewErr500("")
 	}
 
@@ -73,8 +73,8 @@ func (a *auth) RegisterUser(ctx context.Context, user *models.User) error {
 	if err != nil {
 		a.log.Warn("Сan`t create token",
 			zap.String("method", "Auth.RegisterUser"),
-			zap.String("error", err.Error()),
-			zap.String("user.Login", user.Login))
+			zap.String("user.Login", user.Login),
+			zap.String("error", err.Error()))
 		return tools.NewErr500("")
 	}
 
@@ -83,8 +83,8 @@ func (a *auth) RegisterUser(ctx context.Context, user *models.User) error {
 	if err != nil {
 		a.log.Warn("Сan`t add token to session",
 			zap.String("method", "Auth.RegisterUser"),
-			zap.String("error", err.Error()),
-			zap.String("user.Login", user.Login))
+			zap.String("user.Login", user.Login),
+			zap.String("error", err.Error()))
 		return tools.NewErr500("")
 	}
 	// Успешное создане пользователя
