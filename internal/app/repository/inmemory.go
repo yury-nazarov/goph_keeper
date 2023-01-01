@@ -45,13 +45,14 @@ func (c *inmemorySessionStorage) AddToken(ctx context.Context, token string, use
 func (c *inmemorySessionStorage) GetUserID(ctx context.Context, token string) (int, error) {
 	userID, ok := c.store[token]
 	if !ok {
-		return 0, fmt.Errorf("userID not found")
+		return 0, fmt.Errorf("session for token: %s not found", token)
 	}
 	return userID, nil
 }
 
 // DeleteToken удаляет токен из активных сессий
 func (c *inmemorySessionStorage) DeleteToken(ctx context.Context, token string) error {
+	delete(c.store, token)
 	return nil
 }
 

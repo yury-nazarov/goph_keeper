@@ -18,6 +18,7 @@ import (
 type Auth interface {
 	RegisterUser(ctx context.Context, user *models.User) error
 	UserLogIn(ctx context.Context, user *models.User) error
+	LogOutUser(ctx context.Context, token string) error
 }
 
 // auth структурка для работы модуля аутентификации/авторизации
@@ -43,12 +44,12 @@ func (a *auth) RegisterUser(ctx context.Context, user *models.User) error {
 	// Проверяем наличие логина в БД
 	ok, err := a.db.UserExist(ctx, user.Login)
 	if err != nil {
-		msg = fmt.Sprintf("can't check user exist: %s", err.Error())
+		msg = fmt.Sprintf("Auth.RegisterUser: can't check user exist: %s", err.Error())
 		a.log.Warn(msg)
 		return tools.NewErr500(msg)
 	}
 	if ok {
-		msg = fmt.Sprintf("%s - user exist", user.Login)
+		msg = fmt.Sprintf("Auth.RegisterUser: can'r create username: %s - username exist", user.Login)
 		a.log.Info(msg)
 		return tools.NewErr409(msg)
 	}
@@ -57,7 +58,7 @@ func (a *auth) RegisterUser(ctx context.Context, user *models.User) error {
 	user.Password = hashPassword(user.Password)
 	user.ID, err = a.db.CreateUser(ctx, user.Login, user.Password)
 	if err != nil {
-		msg = fmt.Sprintf("can't create user: %s", err.Error())
+		msg = fmt.Sprintf("Auth.RegisterUser: can't create user: %s", err.Error())
 		a.log.Warn(msg)
 		return tools.NewErr500(msg)
 	}
@@ -65,7 +66,7 @@ func (a *auth) RegisterUser(ctx context.Context, user *models.User) error {
 	// Создаем токен
 	user.Token, err = a.createToken()
 	if err != nil {
-		msg = fmt.Sprintf("can't create token: %s", err.Error())
+		msg = fmt.Sprintf("Auth.RegisterUser: can't create token: %s", err.Error())
 		a.log.Warn(msg)
 		return tools.NewErr500(msg)
 	}
@@ -73,10 +74,12 @@ func (a *auth) RegisterUser(ctx context.Context, user *models.User) error {
 	// Логинем пользователя
 	err = a.sessions.AddToken(ctx, user.Token, user.ID)
 	if err != nil {
-		msg = fmt.Sprintf("can't add token to session: %s", err.Error())
+		msg = fmt.Sprintf("Auth.RegisterUser: can't add token to session: %s", err.Error())
 		a.log.Warn(msg)
 		return tools.NewErr500(msg)
 	}
+	msg = fmt.Sprintf("Auth.RegisterUser: user with login: %s, userID: %d - was success created", user.Login, user.ID)
+	a.log.Info(msg)
 	return nil
 }
 
@@ -108,6 +111,29 @@ func (a *auth) UserLogIn(ctx context.Context, user *models.User) error {
 		a.log.Warn(msg)
 		return tools.NewErr500(msg)
 	}
+	return nil
+}
+
+// LogOutUser логика выхода пользователя и удаления токена в сессиях
+func (a *auth) LogOutUser(ctx context.Context, token string) error {
+	var msg string
+	// Проверяем наличие залогиненой сессии
+	userID, err := a.sessions.GetUserID(ctx, token)
+	if err != nil {
+		a.log.Info(err.Error())
+		return tools.NewErr404(err.Error())
+	}
+
+	// Если есть, удаляем сессию
+	err = a.sessions.DeleteToken(ctx, token)
+	if err != nil {
+		msg = fmt.Sprintf("can't delete token: %s. Reason: %s", token, err.Error())
+		a.log.Warn(msg)
+		return tools.NewErr500(msg)
+	}
+	// Успешный логаут
+	msg = fmt.Sprintf("userID: %d was logout. Token: %s was deleted", userID, token)
+	a.log.Info(msg)
 	return nil
 }
 

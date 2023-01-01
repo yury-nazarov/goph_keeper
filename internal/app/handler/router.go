@@ -18,6 +18,8 @@ func NewRouter(c *Controller, log *zap.Logger) http.Handler {
 		r.Get("/version", c.Version)
 		r.Post("/signup", c.SignUp)
 		r.Post("/signin", c.SignIn)
+		r.Delete("/signout", c.SignOut)
+
 	})
 	return r
 }

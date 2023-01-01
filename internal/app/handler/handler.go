@@ -18,6 +18,7 @@ import (
 var (
 	err    error
 	err401 *tools.Err401
+	err404 *tools.Err404
 	err409 *tools.Err409
 	err500 *tools.Err500
 )
@@ -91,5 +92,22 @@ func (c *Controller) SignIn(w http.ResponseWriter, r *http.Request) {
 	}
 	c.log.Debug(fmt.Sprintf("userID: %d got token: %s", user.ID, user.Token))
 	w.Header().Set("Authorization", user.Token)
+	w.WriteHeader(http.StatusOK)
+}
+
+
+// SignOut - выход пользователя
+func (c *Controller) SignOut(w http.ResponseWriter, r *http.Request) {
+	// Получить токен из заголовка
+	token := r.Header.Get("Authorization")
+	// Удалить по токену запись в сессиях
+	err = c.auth.LogOutUser(r.Context(), token)
+	if errors.As(err, &err404) {
+		w.WriteHeader(http.StatusNotFound)
+	}
+	if errors.As(err, &err500) {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	// Пользователь успешно удален
 	w.WriteHeader(http.StatusOK)
 }
