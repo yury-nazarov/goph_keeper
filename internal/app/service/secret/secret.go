@@ -2,6 +2,8 @@ package secret
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
 	"github.com/yury-nazarov/goph_keeper/internal/app/models"
 	"github.com/yury-nazarov/goph_keeper/internal/app/repository"
@@ -19,6 +21,7 @@ type secret struct {
 type Secret interface {
 	Create(ctx context.Context, secret models.Secret) error
 	List(ctx context.Context, userID int) ([]models.Secret, error)
+	GetByID(ctx context.Context, secretID int) (models.Secret, error)
 }
 
 func NewSecret(db repository.DB, logger *zap.Logger) *secret {
@@ -65,4 +68,34 @@ func (s *secret) List(ctx context.Context, userID int) (secrets []models.Secret,
 		zap.Int("userID", userID),
 		zap.String("secrets", fmt.Sprintf("%+v", secrets)))
 	return secrets, nil
+}
+
+// GetByID вернет секрет по ID
+func (s *secret) GetByID(ctx context.Context, secretID int) (secret models.Secret, err error) {
+	// Получаем userID который добавляем в контекст из middleware
+	secret.UserID = ctx.Value("userID").(int)
+	s.log.Debug("secret.GetByID", zap.Int("userID", secret.UserID))
+
+	secret.ID = secretID
+
+	secret, err = s.db.GetSecretByID(ctx, secret)
+	if errors.Is(err, sql.ErrNoRows) {
+		s.log.Warn("can't get secret",
+			zap.String("method", "secret.GetByID"),
+			zap.Int("userID", secret.UserID),
+			zap.Int("secretID", secret.ID),
+			zap.String("error", err.Error()),
+		)
+		return secret, tools.NewErr404("")
+	}
+	if err != nil {
+		s.log.Warn("can't get secret",
+			zap.String("method", "secret.GetByID"),
+			zap.Int("userID", secret.UserID),
+			zap.Int("secretID", secret.ID),
+			zap.String("error", err.Error()),
+			)
+		return secret, tools.NewErr500("")
+	}
+	return secret, nil
 }

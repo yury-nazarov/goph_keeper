@@ -23,6 +23,7 @@ type DB interface {
 
 	AddSecret(ctx context.Context, secret models.Secret) (int, error)
 	GetSecretList(ctx context.Context, userID int) ([]models.Secret, error)
+	GetSecretByID(ctx context.Context, secret models.Secret) (models.Secret, error)
 
 	Close() error
 }
@@ -146,6 +147,18 @@ func (p *psql) GetSecretList(ctx context.Context, userID int) (secretList []mode
 	return secretList, nil
 }
 
+// GetSecretByID получает из БД секрет по ID для конкретного пользователя
+func (p *psql) GetSecretByID(ctx context.Context, secret models.Secret) (models.Secret, error) {
+	err := p.db.QueryRowContext(ctx, `SELECT name, data, description FROM app_secret WHERE id=$1 AND user_id=$2 LIMIT 1`, secret.ID, secret.UserID).Scan(&secret.Name, &secret.Data, &secret.Description)
+	// Записи нет в БД
+	if errors.Is(err, sql.ErrNoRows) {
+		return secret, err
+	}
+	if err != nil {
+		return secret, err
+	}
+	return secret, nil
+}
 
 // Close закрываем соединение к БД
 func (p *psql) Close() error {

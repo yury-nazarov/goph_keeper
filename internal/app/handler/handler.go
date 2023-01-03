@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/go-chi/chi/v5"
 	"github.com/yury-nazarov/goph_keeper/internal/app/models"
 	"github.com/yury-nazarov/goph_keeper/internal/app/repository"
 	"github.com/yury-nazarov/goph_keeper/internal/app/service/auth"
@@ -11,6 +12,7 @@ import (
 	"github.com/yury-nazarov/goph_keeper/internal/options"
 	"github.com/yury-nazarov/goph_keeper/pkg/tools"
 	"net/http"
+	"strconv"
 
 	"go.uber.org/zap"
 )
@@ -176,4 +178,63 @@ func (c *Controller) SecretList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	return
+}
+
+// SecretByID вернет секрет по ID
+func (c *Controller) SecretByID(w http.ResponseWriter, r *http.Request) {
+	var (
+		item models.Secret
+		secretJSON []byte
+		secretID int
+	)
+
+	// Получаем secretID из URL
+	secretID, err = strconv.Atoi(chi.URLParam(r, "secretID"))
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	// Получаем секрет
+	item, err = c.secret.GetByID(r.Context(), secretID)
+	if errors.As(err, &err404) {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	if errors.As(err, &err500) {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+
+	// Замаршалить в JSON
+	secretJSON, err = json.Marshal(item)
+	if err != nil {
+		c.log.Warn("can't marshal to JSON",
+			zap.String("method", "handler.SecretByID"),
+			zap.Int("userID", item.UserID),
+			zap.Int("secretID", secretID),
+			zap.String("secret", fmt.Sprintf("%+v", item)),
+			zap.String("error", err.Error()))
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+
+	// Секрет успешно отправлен пользователю
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_, err = w.Write(secretJSON)
+	if err != nil {
+		c.log.Warn("can't write response to client",
+			zap.String("method", "handler.SecretByID"),
+			zap.Int("userID", item.UserID),
+			zap.Int("secretID", secretID),
+			zap.String("secret", fmt.Sprintf("%+v", item)),
+			zap.String("error", err.Error()))
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	return
+
 }
