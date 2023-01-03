@@ -113,6 +113,21 @@ HTTP Authorization: {{Token}}
 - 401 - пользователь не аутентифицирован
 - 500 - внутренняя ошибка сервера
 
+## Список секретов
+
+**Request**
+
+GET `/api/v1/secret/list`
+```
+HTTP Authorization: {{Token}}
+```
+
+**Response**
+
+- 200 - вернул список секретов
+- 401 - пользователь не аутентифицирован
+- 500 - внутренняя ошибка сервера
+
 ## Обновить секрет
 
 **Request**
@@ -126,16 +141,6 @@ PUT `/api/v1/secret/update`
 **Request**
 
 GET `/api/v1/secret/{secretID}`
-
-**Response**
-
-TODO
-
-## Список секретов
-
-**Request**
-
-GET `/api/v1/secret/list`
 
 **Response**
 

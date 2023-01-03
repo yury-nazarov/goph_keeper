@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/yury-nazarov/goph_keeper/internal/app/models"
@@ -123,7 +124,7 @@ func (c *Controller) SecretNew(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	// Добавляем userID который добавляем в контекст из middleware
+	// Получаем userID который добавляем в контекст из middleware
 	secret.UserID = r.Context().Value("userID").(int)
 	c.log.Debug("handler.SecretNew", zap.String("struct debug", fmt.Sprintf("%+v", secret)))
 
@@ -134,5 +135,45 @@ func (c *Controller) SecretNew(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusCreated)
+	return
+}
+
+// SecretList - получить список секретов
+func (c *Controller) SecretList(w http.ResponseWriter, r *http.Request) {
+	var secrets []models.Secret
+	var secretsJSON []byte
+
+	// Получаем userID который добавляем в контекст из middleware
+	userID := r.Context().Value("userID").(int)
+	c.log.Debug("handler.SecretList", zap.Int("userID", userID))
+
+	secrets, err = c.secret.List(r.Context(), userID)
+	if errors.As(err, &err500) {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	// Замаршалить в JSON
+	secretsJSON, err = json.Marshal(secrets)
+	if err != nil {
+		c.log.Warn("can't marshal to JSON",
+			zap.String("method", "handler.SecretList"),
+			zap.Int("userID", userID),
+			zap.String("error", err.Error()))
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	// Список секретов успешно отправлен пользователю
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_, err = w.Write(secretsJSON)
+	if err != nil {
+		c.log.Warn("can't write response to client",
+			zap.String("method", "handler.SecretList"),
+			zap.Int("userID", userID),
+			zap.String("error", err.Error()))
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 	return
 }

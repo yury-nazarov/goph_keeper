@@ -2,6 +2,7 @@ package secret
 
 import (
 	"context"
+	"fmt"
 	"github.com/yury-nazarov/goph_keeper/internal/app/models"
 	"github.com/yury-nazarov/goph_keeper/internal/app/repository"
 	"github.com/yury-nazarov/goph_keeper/pkg/tools"
@@ -17,6 +18,7 @@ type secret struct {
 
 type Secret interface {
 	Create(ctx context.Context, secret models.Secret) error
+	List(ctx context.Context, userID int) ([]models.Secret, error)
 }
 
 func NewSecret(db repository.DB, logger *zap.Logger) *secret {
@@ -45,3 +47,22 @@ func (s *secret) Create(ctx context.Context, secret models.Secret) error {
 	return nil
 }
 
+// List логика получения всех секретов пользователя
+func (s *secret) List(ctx context.Context, userID int) (secrets []models.Secret, err error) {
+	secrets, err = s.db.GetSecretList(ctx, userID)
+	if err != nil {
+		s.log.Warn("Can't get list of secrets",
+			zap.String("method", "Secret.List"),
+			zap.Int("userID", userID),
+			zap.String("error", err.Error()))
+		return nil, tools.NewErr500("")
+	}
+	s.log.Info("Success get list of secret",
+		zap.String("method", "Secret.List"),
+		zap.Int("userID", userID))
+	s.log.Debug("Success get list of secret",
+		zap.String("method", "Secret.List"),
+		zap.Int("userID", userID),
+		zap.String("secrets", fmt.Sprintf("%+v", secrets)))
+	return secrets, nil
+}

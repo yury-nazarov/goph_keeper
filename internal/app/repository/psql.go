@@ -22,6 +22,7 @@ type DB interface {
 	UserIsValid(ctx context.Context, user models.User) (int, error)
 
 	AddSecret(ctx context.Context, secret models.Secret) (int, error)
+	GetSecretList(ctx context.Context, userID int) ([]models.Secret, error)
 
 	Close() error
 }
@@ -121,9 +122,30 @@ func (p *psql) AddSecret(ctx context.Context, secret models.Secret) (int, error)
 	if err != nil {
 		return 0, err
 	}
-	fmt.Println("%+v\n", secret)
 	return secret.ID, nil
 }
+
+// GetSecretList получает из БД список секретов по userID
+func (p *psql) GetSecretList(ctx context.Context, userID int) (secretList []models.Secret, err error)  {
+	var secret models.Secret
+	rows, err := p.db.QueryContext(ctx, `SELECT id, name, data, description FROM app_secret WHERE user_id=$1`, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		if err = rows.Scan(&secret.ID, &secret.Name, &secret.Data, &secret.Description); err != nil {
+			p.log.Warn("can't read string from query",
+				zap.String("method", "psql.GetSecretList"),
+				zap.Int("userID", userID),
+				zap.String("error", err.Error()))
+		}
+		secretList = append(secretList, secret)
+	}
+	return secretList, nil
+}
+
 
 // Close закрываем соединение к БД
 func (p *psql) Close() error {
