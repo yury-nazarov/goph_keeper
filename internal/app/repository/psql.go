@@ -128,14 +128,14 @@ func (p *psql) AddSecret(ctx context.Context, secret models.Secret) (int, error)
 // GetSecretList получает из БД список секретов по userID
 func (p *psql) GetSecretList(ctx context.Context, userID int) (secretList []models.Secret, err error)  {
 	var secret models.Secret
-	rows, err := p.db.QueryContext(ctx, `SELECT id, name, data, description FROM app_secret WHERE user_id=$1`, userID)
+	rows, err := p.db.QueryContext(ctx, `SELECT id, user_id, name, data, description FROM app_secret WHERE user_id=$1`, userID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
 	for rows.Next() {
-		if err = rows.Scan(&secret.ID, &secret.Name, &secret.Data, &secret.Description); err != nil {
+		if err = rows.Scan(&secret.ID, &secret.UserID, &secret.Name, &secret.Data, &secret.Description); err != nil {
 			p.log.Warn("can't read string from query",
 				zap.String("method", "psql.GetSecretList"),
 				zap.Int("userID", userID),
