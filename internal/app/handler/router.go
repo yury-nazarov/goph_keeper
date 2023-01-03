@@ -21,8 +21,9 @@ func NewRouter(c *Controller) http.Handler {
 				r.Delete("/signout", c.SignOut)
 			})
 		})
-		r.Route("/secrets", func(r chi.Router) {
-			// TODO
+		r.Route("/secret", func(r chi.Router) {
+			r.Use(mwTokenAuth(c))
+			r.Post("/new", c.SecretNew)
 		})
 
 

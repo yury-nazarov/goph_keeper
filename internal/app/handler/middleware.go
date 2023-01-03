@@ -29,9 +29,9 @@ func mwTokenAuth(c *Controller) func(next http.Handler) http.Handler {
 				zap.Int("userID", userID))
 
 			// Добавляем userID к контексту
-			// далее в методах можно получить доступ: ctx.Value("userID")
-			ctx := r.Context()
-			ctx = context.WithValue(ctx, "userID", userID)
+			// далее в методах можно получить доступ через: ctx.Value("userID")
+			req := r.WithContext(context.WithValue(r.Context(), "userID", userID))
+			*r = *req
 
 			// Передаем request далее
 			next.ServeHTTP(w, r)

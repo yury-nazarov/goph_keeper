@@ -20,6 +20,9 @@ type DB interface {
 	UserExist(ctx context.Context, login string) (bool, error)
 	CreateUser(ctx context.Context, login string, password string) (int, error)
 	UserIsValid(ctx context.Context, user models.User) (int, error)
+
+	AddSecret(ctx context.Context, secret models.Secret) (int, error)
+
 	Close() error
 }
 
@@ -110,6 +113,16 @@ func (p *psql) UserIsValid(ctx context.Context, user models.User) (int, error) {
 	}
 	// если запись найдена по логину и хешу пароля, то считаем, что учетные данные валидны
 	return user.ID, nil
+}
+
+// AddSecret создает в БД запись для нового секрета
+func (p *psql) AddSecret(ctx context.Context, secret models.Secret) (int, error) {
+	err := p.db.QueryRowContext(ctx, `INSERT INTO app_secret (user_id, name, data, description) VALUES ($1, $2, $3, $4) RETURNING id`, secret.UserID, secret.Name, secret.Data, secret.Description).Scan(&secret.ID)
+	if err != nil {
+		return 0, err
+	}
+	fmt.Println("%+v\n", secret)
+	return secret.ID, nil
 }
 
 // Close закрываем соединение к БД
