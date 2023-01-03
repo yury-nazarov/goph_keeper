@@ -20,7 +20,7 @@ func mwTokenAuth(c *Controller) func(next http.Handler) http.Handler {
 					zap.String("method", "Handler.mwTokenAuth"),
 					zap.String("token", token),
 					zap.String("error", err.Error()))
-				w.WriteHeader(http.StatusNotFound)
+				w.WriteHeader(http.StatusUnauthorized)
 				return
 			}
 			c.log.Debug("Success middleware lookup userID",
