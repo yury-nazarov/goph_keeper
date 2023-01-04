@@ -107,9 +107,9 @@ HTTP Authorization: {{Token}}
 ```
 ```json
 {
-	"name": "title",
-    "data": "hashOfSecret+salt",
-	"description": "example"
+  "name": "title",
+  "data": "hashOfSecret+salt",
+  "description": "example"
 }
 ```
 
