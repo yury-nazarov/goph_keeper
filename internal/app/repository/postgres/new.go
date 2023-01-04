@@ -3,9 +3,10 @@ package postgres
 import (
 	"context"
 	"database/sql"
+	"strconv"
+
 	"github.com/yury-nazarov/goph_keeper/internal/app/models"
 	"github.com/yury-nazarov/goph_keeper/internal/options"
-	"strconv"
 
 	_ "github.com/jackc/pgx/v4/stdlib"
 	"github.com/pressly/goose"
@@ -35,8 +36,8 @@ type psql struct {
 	log *zap.Logger
 }
 
-// NewPostgres  инициирует подключение к БД
-func NewPostgres(log *zap.Logger, cfg options.Config) (*psql, error) {
+// New  инициирует подключение к БД
+func New(log *zap.Logger, cfg options.Config) (*psql, error) {
 	// Открываем подключение к БД
 	db, err := sql.Open("pgx", cfg.DB)
 	if err != nil {
@@ -63,18 +64,17 @@ func NewPostgres(log *zap.Logger, cfg options.Config) (*psql, error) {
 }
 
 // migrations запускает миграции
-//
 func (p *psql) migrations(migrateTo string, migrateFile string) error {
 	var err error
-	var migrationDownToNum int64
+	var migrateToNum int64
 
 	if len(migrateTo) > 0 {
-		migrationDownToNum, err = strconv.ParseInt(migrateTo, 10, 64)
+		migrateToNum, err = strconv.ParseInt(migrateTo, 10, 64)
 		if err != nil {
 			return err
 		}
 
-		err = goose.DownTo(p.db, migrateFile, migrationDownToNum)
+		err = goose.DownTo(p.db, migrateFile, migrateToNum)
 	} else {
 		err = goose.Up(p.db, migrateFile)
 	}

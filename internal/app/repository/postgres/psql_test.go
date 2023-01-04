@@ -46,7 +46,7 @@ func (sts *StorageTestSuite) SetupTest() {
 			"postgres"),
 	}
 
-	store, err := NewPostgres(logger, opts)
+	store, err := New(logger, opts)
 	require.NoError(sts.T(), err)
 
 	sts.TestStorager = store

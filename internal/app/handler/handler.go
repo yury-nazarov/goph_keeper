@@ -4,17 +4,19 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/go-chi/chi/v5"
+	"net/http"
+	"strconv"
+
 	"github.com/yury-nazarov/goph_keeper/internal/app/models"
-	"github.com/yury-nazarov/goph_keeper/internal/app/repository"
+	"github.com/yury-nazarov/goph_keeper/internal/app/repository/inmemory"
 	"github.com/yury-nazarov/goph_keeper/internal/app/repository/postgres"
 	"github.com/yury-nazarov/goph_keeper/internal/app/service/auth"
 	"github.com/yury-nazarov/goph_keeper/internal/app/service/secret"
 	"github.com/yury-nazarov/goph_keeper/internal/options"
 	"github.com/yury-nazarov/goph_keeper/pkg/tools"
-	"net/http"
-	"strconv"
 
+
+	"github.com/go-chi/chi/v5"
 	"go.uber.org/zap"
 )
 
@@ -30,15 +32,15 @@ var (
 // Controller - контроллер обработки HTTP запросов
 type Controller struct {
 	db       postgres.DB
-	sessions repository.Sessions
-	cgf      	options.Config
+	sessions inmemory.Sessions
+	cgf      options.Config
 	log      	*zap.Logger
 	auth     	auth.Auth
 	secret     	secret.Secret
 }
 
 // NewController создает новый экземпляр контроллера который передаем в роутер
-func NewController(db postgres.DB, sessions repository.Sessions, cfg options.Config, log *zap.Logger, auth auth.Auth, secret secret.Secret) *Controller {
+func NewController(db postgres.DB, sessions inmemory.Sessions, cfg options.Config, log *zap.Logger, auth auth.Auth, secret secret.Secret) *Controller {
 	c := &Controller{
 		db:       db,
 		sessions: sessions,

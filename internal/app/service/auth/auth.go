@@ -5,10 +5,10 @@ import (
 	"crypto/md5"
 	"crypto/rand"
 	"fmt"
-	"github.com/yury-nazarov/goph_keeper/internal/app/repository/postgres"
 
 	"github.com/yury-nazarov/goph_keeper/internal/app/models"
-	"github.com/yury-nazarov/goph_keeper/internal/app/repository"
+	"github.com/yury-nazarov/goph_keeper/internal/app/repository/inmemory"
+	"github.com/yury-nazarov/goph_keeper/internal/app/repository/postgres"
 	"github.com/yury-nazarov/goph_keeper/pkg/tools"
 
 	"go.uber.org/zap"
@@ -25,12 +25,12 @@ type Auth interface {
 // auth структурка для работы модуля аутентификации/авторизации
 type auth struct {
 	log      *zap.Logger
-	sessions repository.Sessions
+	sessions inmemory.Sessions
 	db       postgres.DB
 }
 
 // New создает объект на основе стурктуры auth
-func New(log *zap.Logger, sessions repository.Sessions, db postgres.DB) *auth {
+func New(log *zap.Logger, sessions inmemory.Sessions, db postgres.DB) *auth {
 	a := &auth{
 		log:      log,
 		sessions: sessions,

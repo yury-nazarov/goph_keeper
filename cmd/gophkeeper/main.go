@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/yury-nazarov/goph_keeper/internal/app/handler"
-	"github.com/yury-nazarov/goph_keeper/internal/app/repository"
+	"github.com/yury-nazarov/goph_keeper/internal/app/repository/inmemory"
 	"github.com/yury-nazarov/goph_keeper/internal/app/repository/postgres"
 	"github.com/yury-nazarov/goph_keeper/internal/app/service/auth"
 	"github.com/yury-nazarov/goph_keeper/internal/app/service/secret"
@@ -20,7 +20,7 @@ import (
 var (
 	app      *application.Application
 	db       postgres.DB
-	sessions repository.Sessions
+	sessions inmemory.Sessions
 	log      *zap.Logger
 	cfg      options.Config
 	err      error
@@ -44,14 +44,14 @@ func main() {
 // onStart запускает проект
 func onStart() {
 	// Инициализируем подключение к БД
-	db, err = postgres.NewPostgres(log, cfg)
+	db, err = postgres.New(log, cfg)
 	if err != nil {
 		log.Fatal("can't init DB storage", zap.String("error", err.Error()))
 	}
 	app.AddClosers(db)
 
 	// Инициализируем подключение к кешу сессий для для хранения токенов
-	sessions, err = repository.NewSessions(log)
+	sessions, err = inmemory.NewSessions(log)
 	if err != nil {
 		log.Fatal("can't init session cache", zap.String("error", err.Error()))
 	}
