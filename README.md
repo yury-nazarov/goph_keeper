@@ -105,6 +105,13 @@ POST `/api/v1/secret/create`
 ```
 HTTP Authorization: {{Token}}
 ```
+```json
+{
+	"name": "title",
+    "data": "hashOfSecret+salt",
+	"description": "example"
+}
+```
 
 **Response**
 
@@ -150,6 +157,9 @@ HTTP Authorization: {{Token}}
 **Request**
 
 PUT `/api/v1/secret/update`
+```
+HTTP Authorization: {{Token}}
+```
 ```json
 {
     "id": 10,
@@ -157,9 +167,6 @@ PUT `/api/v1/secret/update`
     "data": "hashOfSecret+salt",
     "description": "hello world"
 }
-```
-```
-HTTP Authorization: {{Token}}
 ```
 
 **Response**
