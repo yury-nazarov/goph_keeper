@@ -48,7 +48,7 @@ go run cmd/gophkeeper/main.go -a 127.0.0.1:8080 -m 20221227191000
 ```
 или 
 ```shell
-export MIGRATION_DOWN_TO="20221227191000"
+export MIGRATION_DOWN_TO="001"
 ```
 
 # HTTP API сервиса
