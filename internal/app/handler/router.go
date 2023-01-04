@@ -25,7 +25,7 @@ func NewRouter(c *Controller) http.Handler {
 			r.Use(mwTokenAuth(c))
 			r.Post("/new", c.SecretNew)
 			r.Get("/list", c.SecretList)
-			r.Get("/{secretID}", c.SecretByID)
+			r.Get("/{secretID}", c.GetSecretByID)
 			r.Put("/update", c.UpdateSecretByID)
 			r.Delete("/delete/{secretID}", c.DeleteSecretByID)
 		})

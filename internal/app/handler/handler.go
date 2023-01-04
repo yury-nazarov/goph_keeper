@@ -180,8 +180,8 @@ func (c *Controller) SecretList(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-// SecretByID вернет секрет по ID
-func (c *Controller) SecretByID(w http.ResponseWriter, r *http.Request) {
+// GetSecretByID вернет секрет по ID
+func (c *Controller) GetSecretByID(w http.ResponseWriter, r *http.Request) {
 	var (
 		item models.Secret
 		secretJSON []byte
