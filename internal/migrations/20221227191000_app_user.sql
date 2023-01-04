@@ -9,5 +9,5 @@ CREATE TABLE IF NOT EXISTS app_user (
 
 -- +goose Down
 -- +goose StatementBegin
-DROP TABLE app_user IF EXISTS;
+DROP TABLE IF EXISTS app_user;
 -- +goose StatementEnd

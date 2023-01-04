@@ -41,6 +41,16 @@ export DATABASE_URI="host=localhost port=5432 user=gop_keeper_dev password=gop_k
 go run cmd/gophkeeper/main.go
 ```
 
+По умолчанию, для БД будет применена последняя версия миграций.
+Если необходимо использовать конкретную версию можно использовать ключ `-m` или переменную `MIGRATION_DOWN_TO`:
+```shell
+go run cmd/gophkeeper/main.go -a 127.0.0.1:8080 -m 20221227191000
+```
+или 
+```shell
+export MIGRATION_DOWN_TO="20221227191000"
+```
+
 # HTTP API сервиса
 
 ## Регистрация пользователя

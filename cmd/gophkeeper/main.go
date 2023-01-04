@@ -42,7 +42,7 @@ func main() {
 // onStart запускает проект
 func onStart() {
 	// Инициализируем подключение к БД
-	db, err = repository.NewPostgres(log, cfg.DB)
+	db, err = repository.NewPostgres(log, cfg)
 	if err != nil {
 		log.Fatal("can't init DB storage", zap.String("error", err.Error()))
 	}

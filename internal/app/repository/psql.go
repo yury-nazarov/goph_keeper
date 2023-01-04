@@ -5,8 +5,9 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-
 	"github.com/yury-nazarov/goph_keeper/internal/app/models"
+	"github.com/yury-nazarov/goph_keeper/internal/options"
+	"strconv"
 
 	_ "github.com/jackc/pgx/v4/stdlib"
 	"github.com/pressly/goose"
@@ -37,9 +38,9 @@ type psql struct {
 }
 
 // NewPostgres  инициирует подключение к БД
-func NewPostgres(log *zap.Logger, connString string) (*psql, error) {
+func NewPostgres(log *zap.Logger, cfg options.Config) (*psql, error) {
 	// Открываем подключение к БД
-	db, err := sql.Open("pgx", connString)
+	db, err := sql.Open("pgx", cfg.DB)
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +55,7 @@ func NewPostgres(log *zap.Logger, connString string) (*psql, error) {
 	p := &psql{db: db, log: log}
 
 	// Запускаем миграции
-	err = p.migrations()
+	err = p.migrations(cfg.MigrationDownTo)
 	if err != nil {
 		return nil, err
 	}
@@ -64,8 +65,22 @@ func NewPostgres(log *zap.Logger, connString string) (*psql, error) {
 }
 
 // migrations запускает миграции
-func (p *psql) migrations() error {
-	err := goose.Up(p.db, "./internal/migrations")
+//
+func (p *psql) migrations(migrationDownTo string) error {
+	var err error
+	var migrationDownToNum int64
+
+	if len(migrationDownTo) > 0 {
+		migrationDownToNum, err = strconv.ParseInt(migrationDownTo, 10, 64)
+		if err != nil {
+			return err
+		}
+
+		err = goose.DownTo(p.db, "./internal/migrations", migrationDownToNum)
+	} else {
+		err = goose.Up(p.db, "./internal/migrations")
+	}
+
 	if err != nil {
 		return err
 	}

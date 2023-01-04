@@ -11,5 +11,5 @@ CREATE TABLE IF NOT EXISTS app_secret (
 
 -- +goose Down
 -- +goose StatementBegin
-DROP TABLE app_secret IF EXISTS;
+DROP TABLE IF EXISTS app_secret;
 -- +goose StatementEnd
