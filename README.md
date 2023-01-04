@@ -133,6 +133,9 @@ HTTP Authorization: {{Token}}
 **Request**
 
 GET `/api/v1/secret/{secretID}`
+```
+HTTP Authorization: {{Token}}
+```
 
 **Response**
 
@@ -155,11 +158,14 @@ PUT `/api/v1/secret/update`
     "description": "hello world"
 }
 ```
+```
+HTTP Authorization: {{Token}}
+```
 
 **Response**
 
 - 201 - секрет усакшно обновлен
-- 400 - не верный формат запроса. Для secretID могут использоватся только цифры.
+- 400 - не верный формат запроса
 - 401 - пользователь не аутентифицирован или не авторизован
 - 500 - внутренняя ошибка сервера
 
@@ -168,5 +174,10 @@ PUT `/api/v1/secret/update`
 **Request**
 
 DELETE `/api/v1/secret/{secretID}`
+```
+HTTP Authorization: {{Token}}
+```
 
 **Response**
+
+- 201 - серет успешно удален
