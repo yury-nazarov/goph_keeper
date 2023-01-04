@@ -23,6 +23,7 @@ type Secret interface {
 	List(ctx context.Context, userID int) ([]models.Secret, error)
 	GetByID(ctx context.Context, secretID int) (models.Secret, error)
 	PutByID(ctx context.Context, item models.Secret) error
+	DeleteByID(ctx context.Context, secretID int) error
 }
 
 func NewSecret(db repository.DB, logger *zap.Logger) *secret {
@@ -123,6 +124,40 @@ func (s *secret) PutByID(ctx context.Context, item models.Secret) error {
 			zap.Int("secretID", item.ID),
 			zap.String("error", err.Error()),
 		)
+		return tools.NewErr500("")
+	}
+	return nil
+}
+
+// DeleteByID удаляет секрет
+func (s *secret) DeleteByID(ctx context.Context, secretID int) error {
+	var (
+		item 	models.Secret
+		item2 	models.Secret
+	)
+	// Получаем userID который добавляем в контекст из middleware
+	item.UserID = ctx.Value("userID").(int)
+	item.ID = secretID
+
+	// Проверяем что секрет пренадлежит этомй пользователю
+	item2, err = s.db.GetSecretByID(ctx, item)
+	if err  != nil || item.ID != item2.ID || item.UserID != item2.UserID{
+		s.log.Warn("HTTP request isn`t authorized",
+			zap.String("method", "secret.PutByID"),
+			zap.Int("userID", item.UserID),
+			zap.Int("secretID", item.ID),
+			zap.String("error", err.Error()))
+		return tools.NewErr401("")
+	}
+
+	// Удаляем запись в БД
+	err = s.db.DeleteSecretByID(ctx, item)
+	if err != nil {
+		s.log.Warn("can't delete secret",
+			zap.String("method", "secret.PutByID"),
+			zap.Int("userID", item.UserID),
+			zap.Int("secretID", item.ID),
+			zap.String("error", err.Error()))
 		return tools.NewErr500("")
 	}
 	return nil

@@ -27,10 +27,8 @@ func NewRouter(c *Controller) http.Handler {
 			r.Get("/list", c.SecretList)
 			r.Get("/{secretID}", c.SecretByID)
 			r.Put("/update", c.UpdateSecretByID)
+			r.Delete("/delete/{secretID}", c.DeleteSecretByID)
 		})
-
-
-
 	})
 	return r
 }

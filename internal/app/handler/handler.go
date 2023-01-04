@@ -274,3 +274,23 @@ func (c *Controller) UpdateSecretByID(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 	return
 }
+
+// DeleteSecretByID удалить секрет
+func (c *Controller) DeleteSecretByID(w http.ResponseWriter, r *http.Request) {
+	var secretID int
+	// Получаем secretID из URL
+	secretID, err = strconv.Atoi(chi.URLParam(r, "secretID"))
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	// Отправляем в слой бизнесл логики для доп. проверок и обновления
+	err = c.secret.DeleteByID(r.Context(), secretID)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusCreated)
+	return
+}
