@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/yury-nazarov/goph_keeper/internal/app/models"
-	"github.com/yury-nazarov/goph_keeper/internal/app/repository"
+	"github.com/yury-nazarov/goph_keeper/internal/app/repository/postgres"
 	"github.com/yury-nazarov/goph_keeper/pkg/tools"
 	"go.uber.org/zap"
 )
@@ -14,7 +14,7 @@ import (
 var err error
 
 type secret struct {
-	db repository.DB
+	db  postgres.DB
 	log *zap.Logger
 }
 
@@ -26,7 +26,7 @@ type Secret interface {
 	DeleteByID(ctx context.Context, secretID int) error
 }
 
-func NewSecret(db repository.DB, logger *zap.Logger) *secret {
+func NewSecret(db postgres.DB, logger *zap.Logger) *secret {
 	s := &secret{
 		db: db,
 		log: logger,

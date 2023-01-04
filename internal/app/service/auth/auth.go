@@ -5,6 +5,7 @@ import (
 	"crypto/md5"
 	"crypto/rand"
 	"fmt"
+	"github.com/yury-nazarov/goph_keeper/internal/app/repository/postgres"
 
 	"github.com/yury-nazarov/goph_keeper/internal/app/models"
 	"github.com/yury-nazarov/goph_keeper/internal/app/repository"
@@ -25,11 +26,11 @@ type Auth interface {
 type auth struct {
 	log      *zap.Logger
 	sessions repository.Sessions
-	db       repository.DB
+	db       postgres.DB
 }
 
 // New создает объект на основе стурктуры auth
-func New(log *zap.Logger, sessions repository.Sessions, db repository.DB) *auth {
+func New(log *zap.Logger, sessions repository.Sessions, db postgres.DB) *auth {
 	a := &auth{
 		log:      log,
 		sessions: sessions,

@@ -1,10 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/yury-nazarov/goph_keeper/internal/app/handler"
 	"github.com/yury-nazarov/goph_keeper/internal/app/repository"
+	"github.com/yury-nazarov/goph_keeper/internal/app/repository/postgres"
 	"github.com/yury-nazarov/goph_keeper/internal/app/service/auth"
 	"github.com/yury-nazarov/goph_keeper/internal/app/service/secret"
 	"github.com/yury-nazarov/goph_keeper/internal/options"
@@ -17,7 +19,7 @@ import (
 // объявляем используемые зависимости и общие переменные
 var (
 	app      *application.Application
-	db       repository.DB
+	db       postgres.DB
 	sessions repository.Sessions
 	log      *zap.Logger
 	cfg      options.Config
@@ -42,7 +44,7 @@ func main() {
 // onStart запускает проект
 func onStart() {
 	// Инициализируем подключение к БД
-	db, err = repository.NewPostgres(log, cfg)
+	db, err = postgres.NewPostgres(log, cfg)
 	if err != nil {
 		log.Fatal("can't init DB storage", zap.String("error", err.Error()))
 	}
@@ -66,7 +68,8 @@ func onStart() {
 
 	// Запускаем веб сервер
 	go func() {
-		srv := http.Server{Addr: cfg.RunAddress, Handler: r}
+		listenAddress := fmt.Sprintf("%s:%d", cfg.Host, cfg.Port)
+		srv := http.Server{Addr: listenAddress, Handler: r}
 		if err = srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatal("HTTP Server ListenAndServe", zap.String("err", err.Error()))
 		}

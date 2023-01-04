@@ -7,6 +7,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/yury-nazarov/goph_keeper/internal/app/models"
 	"github.com/yury-nazarov/goph_keeper/internal/app/repository"
+	"github.com/yury-nazarov/goph_keeper/internal/app/repository/postgres"
 	"github.com/yury-nazarov/goph_keeper/internal/app/service/auth"
 	"github.com/yury-nazarov/goph_keeper/internal/app/service/secret"
 	"github.com/yury-nazarov/goph_keeper/internal/options"
@@ -28,8 +29,8 @@ var (
 
 // Controller - контроллер обработки HTTP запросов
 type Controller struct {
-	db       	repository.DB
-	sessions 	repository.Sessions
+	db       postgres.DB
+	sessions repository.Sessions
 	cgf      	options.Config
 	log      	*zap.Logger
 	auth     	auth.Auth
@@ -37,7 +38,7 @@ type Controller struct {
 }
 
 // NewController создает новый экземпляр контроллера который передаем в роутер
-func NewController(db repository.DB, sessions repository.Sessions, cfg options.Config, log *zap.Logger, auth auth.Auth, secret secret.Secret) *Controller {
+func NewController(db postgres.DB, sessions repository.Sessions, cfg options.Config, log *zap.Logger, auth auth.Auth, secret secret.Secret) *Controller {
 	c := &Controller{
 		db:       db,
 		sessions: sessions,

@@ -32,23 +32,26 @@ docker-compose up
 
 Запустить сервер с ключами 
 ```shell
-go run cmd/gophkeeper/main.go -a 127.0.0.1:8080 -d "host=localhost port=5432 user=gop_keeper_dev password=gop_keeper_dev dbname=gop_keeper_dev sslmode=disable connect_timeout=5"
+go run cmd/gophkeeper/main.go -h 127.0.0.1 -p 8080 -d "host=localhost port=5432 user=gop_keeper_dev password=gop_keeper_dev dbname=gop_keeper_dev sslmode=disable connect_timeout=5"
 ```
 или переменными окружения
 ```shell
-export RUN_ADDRESS="127.0.0.1:8080"
+export HOST="127.0.0.1"
+export PORT="8080"
 export DATABASE_URI="host=localhost port=5432 user=gop_keeper_dev password=gop_keeper_dev dbname=gop_keeper_dev sslmode=disable connect_timeout=5"
+export MIGRATE_FILE="./internal/migrations"
 go run cmd/gophkeeper/main.go
 ```
 
 По умолчанию, для БД будет применена последняя версия миграций.
 Если необходимо использовать конкретную версию можно использовать ключ `-m` или переменную `MIGRATION_DOWN_TO`:
 ```shell
-go run cmd/gophkeeper/main.go -a 127.0.0.1:8080 -m 20221227191000
+go run cmd/gophkeeper/main.go -a 127.0.0.1 -p 8080 -mt 002 -mf "./internal/migrations"
 ```
 или 
 ```shell
-export MIGRATION_DOWN_TO="001"
+export MIGRATE_TO="002"
+export MIGRATE_FILE="./internal/migrations"
 ```
 
 # HTTP API сервиса
