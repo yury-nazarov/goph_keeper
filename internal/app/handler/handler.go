@@ -206,7 +206,6 @@ func (c *Controller) SecretByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-
 	// Замаршалить в JSON
 	secretJSON, err = json.Marshal(item)
 	if err != nil {
@@ -219,7 +218,6 @@ func (c *Controller) SecretByID(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-
 
 	// Секрет успешно отправлен пользователю
 	w.Header().Set("Content-Type", "application/json")
@@ -237,4 +235,42 @@ func (c *Controller) SecretByID(w http.ResponseWriter, r *http.Request) {
 	}
 	return
 
+}
+
+// UpdateSecretByID обновление секрета по ID
+func (c *Controller) UpdateSecretByID(w http.ResponseWriter, r *http.Request) {
+	var secretItem models.Secret
+	// Получаем userID который добавляем в контекст из middleware
+	secretItem.UserID = r.Context().Value("userID").(int)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	// Извлекаем id, name, data, description из HTTP запроса
+	if err = tools.JSONUnmarshal(r, &secretItem); err != nil {
+		c.log.Warn("can't unmarshal json",
+			zap.String("method", "handler.UpdateSecretByID"),
+			zap.Int("userID", secretItem.UserID),
+			zap.String("error", err.Error()))
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	// Отправляем в слой бизнесл логики для доп. проверок и обновления
+	err = c.secret.PutByID(r.Context(), secretItem)
+	if errors.As(err, &err401) {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	if errors.As(err, &err404) {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	if errors.As(err, &err500) {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusCreated)
+	return
 }

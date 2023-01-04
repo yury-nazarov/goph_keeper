@@ -22,6 +22,7 @@ type Secret interface {
 	Create(ctx context.Context, secret models.Secret) error
 	List(ctx context.Context, userID int) ([]models.Secret, error)
 	GetByID(ctx context.Context, secretID int) (models.Secret, error)
+	PutByID(ctx context.Context, item models.Secret) error
 }
 
 func NewSecret(db repository.DB, logger *zap.Logger) *secret {
@@ -98,4 +99,31 @@ func (s *secret) GetByID(ctx context.Context, secretID int) (secret models.Secre
 		return secret, tools.NewErr500("")
 	}
 	return secret, nil
+}
+
+func (s *secret) PutByID(ctx context.Context, item models.Secret) error {
+	var item2 models.Secret
+	// Проверяем что секрет пренадлежит этомй пользователю
+	item2, err = s.db.GetSecretByID(ctx, item)
+	if err  != nil || item.ID != item2.ID || item.UserID != item2.UserID{
+		s.log.Warn("HTTP request isn`t authorized",
+			zap.String("method", "secret.PutByID"),
+			zap.Int("userID", item.UserID),
+			zap.Int("secretID", item.ID),
+			zap.String("error", err.Error()))
+		return tools.NewErr401("")
+	}
+
+	// Обновляем серет в БД
+	err = s.db.UpdateSecretByID(ctx, item)
+	if err != nil {
+		s.log.Warn("can't update secret",
+			zap.String("method", "secret.PutByID"),
+			zap.Int("userID", item.UserID),
+			zap.Int("secretID", item.ID),
+			zap.String("error", err.Error()),
+		)
+		return tools.NewErr500("")
+	}
+	return nil
 }

@@ -24,6 +24,7 @@ type DB interface {
 	AddSecret(ctx context.Context, secret models.Secret) (int, error)
 	GetSecretList(ctx context.Context, userID int) ([]models.Secret, error)
 	GetSecretByID(ctx context.Context, secret models.Secret) (models.Secret, error)
+	UpdateSecretByID(ctx context.Context, secret models.Secret) error
 
 	Close() error
 }
@@ -158,6 +159,15 @@ func (p *psql) GetSecretByID(ctx context.Context, secret models.Secret) (models.
 		return secret, err
 	}
 	return secret, nil
+}
+
+// UpdateSecretByID обновляет секрет
+func (p *psql) UpdateSecretByID(ctx context.Context, secret models.Secret) error {
+	_, err := p.db.ExecContext(ctx, `UPDATE app_secret SET name=$1, data=$2, description=$3 WHERE id=$4 AND user_id=$5`, secret.Name, secret.Data, secret.Description, secret.ID, secret.UserID)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // Close закрываем соединение к БД

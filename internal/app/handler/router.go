@@ -26,6 +26,7 @@ func NewRouter(c *Controller) http.Handler {
 			r.Post("/new", c.SecretNew)
 			r.Get("/list", c.SecretList)
 			r.Get("/{secretID}", c.SecretByID)
+			r.Put("/update", c.UpdateSecretByID)
 		})
 
 

@@ -147,8 +147,21 @@ GET `/api/v1/secret/{secretID}`
 **Request**
 
 PUT `/api/v1/secret/update`
+```json
+{
+    "id": 10,
+    "name": "title",
+    "data": "hashOfSecret+salt",
+    "description": "hello world"
+}
+```
 
 **Response**
+
+- 201 - секрет усакшно обновлен
+- 400 - не верный формат запроса. Для secretID могут использоватся только цифры.
+- 401 - пользователь не аутентифицирован или не авторизован
+- 500 - внутренняя ошибка сервера
 
 ##  Удалить секрет
 
