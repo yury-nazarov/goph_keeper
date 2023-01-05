@@ -6,9 +6,9 @@ import (
 	"crypto/rand"
 	"fmt"
 
-	"github.com/yury-nazarov/goph_keeper/internal/app/models"
-	"github.com/yury-nazarov/goph_keeper/internal/app/repository/inmemory"
-	"github.com/yury-nazarov/goph_keeper/internal/app/repository/postgres"
+	"github.com/yury-nazarov/goph_keeper/internal/server/models"
+	"github.com/yury-nazarov/goph_keeper/internal/server/repository/inmemory"
+	"github.com/yury-nazarov/goph_keeper/internal/server/repository/postgres"
 	"github.com/yury-nazarov/goph_keeper/pkg/tools"
 
 	"go.uber.org/zap"

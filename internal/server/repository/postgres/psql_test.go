@@ -6,9 +6,9 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/yury-nazarov/goph_keeper/internal/app/models"
-	"github.com/yury-nazarov/goph_keeper/internal/app/repository/postgres/testhelpers"
 	"github.com/yury-nazarov/goph_keeper/internal/options"
+	"github.com/yury-nazarov/goph_keeper/internal/server/models"
+	"github.com/yury-nazarov/goph_keeper/internal/server/repository/postgres/testhelpers"
 	"github.com/yury-nazarov/goph_keeper/pkg/logger"
 
 	"github.com/stretchr/testify/require"

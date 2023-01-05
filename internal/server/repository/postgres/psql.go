@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/yury-nazarov/goph_keeper/internal/app/models"
+	"github.com/yury-nazarov/goph_keeper/internal/server/models"
 
 	_ "github.com/jackc/pgx/v4/stdlib"
 	"go.uber.org/zap"

@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/yury-nazarov/goph_keeper/internal/app/handler"
-	"github.com/yury-nazarov/goph_keeper/internal/app/repository/inmemory"
-	"github.com/yury-nazarov/goph_keeper/internal/app/repository/postgres"
-	"github.com/yury-nazarov/goph_keeper/internal/app/service/auth"
-	"github.com/yury-nazarov/goph_keeper/internal/app/service/secret"
 	"github.com/yury-nazarov/goph_keeper/internal/options"
+	"github.com/yury-nazarov/goph_keeper/internal/server/handler"
+	"github.com/yury-nazarov/goph_keeper/internal/server/repository/inmemory"
+	"github.com/yury-nazarov/goph_keeper/internal/server/repository/postgres"
+	"github.com/yury-nazarov/goph_keeper/internal/server/service/auth"
+	"github.com/yury-nazarov/goph_keeper/internal/server/service/secret"
 	"github.com/yury-nazarov/goph_keeper/pkg/application"
 	"github.com/yury-nazarov/goph_keeper/pkg/logger"
 
