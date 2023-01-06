@@ -7,7 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/yury-nazarov/goph_keeper/internal/options"
+	"github.com/yury-nazarov/goph_keeper/internal/server/repository/options"
 
 	"go.uber.org/zap"
 )

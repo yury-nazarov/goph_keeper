@@ -6,8 +6,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/yury-nazarov/goph_keeper/internal/options"
-	"github.com/yury-nazarov/goph_keeper/internal/server/models"
+	"github.com/yury-nazarov/goph_keeper/internal/models"
+	"github.com/yury-nazarov/goph_keeper/internal/server/repository/options"
 	"github.com/yury-nazarov/goph_keeper/internal/server/repository/postgres/testhelpers"
 	"github.com/yury-nazarov/goph_keeper/pkg/logger"
 

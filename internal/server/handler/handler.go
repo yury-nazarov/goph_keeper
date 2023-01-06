@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/yury-nazarov/goph_keeper/internal/options"
-	"github.com/yury-nazarov/goph_keeper/internal/server/models"
+	"github.com/yury-nazarov/goph_keeper/internal/models"
 	"github.com/yury-nazarov/goph_keeper/internal/server/repository/inmemory"
+	"github.com/yury-nazarov/goph_keeper/internal/server/repository/options"
 	"github.com/yury-nazarov/goph_keeper/internal/server/repository/postgres"
 	"github.com/yury-nazarov/goph_keeper/internal/server/service/auth"
 	"github.com/yury-nazarov/goph_keeper/internal/server/service/secret"

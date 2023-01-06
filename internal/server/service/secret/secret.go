@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/yury-nazarov/goph_keeper/internal/server/models"
+	"github.com/yury-nazarov/goph_keeper/internal/models"
 	"github.com/yury-nazarov/goph_keeper/internal/server/repository/postgres"
 	"github.com/yury-nazarov/goph_keeper/pkg/tools"
 	"go.uber.org/zap"

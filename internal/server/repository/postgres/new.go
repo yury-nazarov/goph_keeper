@@ -5,8 +5,8 @@ import (
 	"database/sql"
 	"strconv"
 
-	"github.com/yury-nazarov/goph_keeper/internal/options"
-	"github.com/yury-nazarov/goph_keeper/internal/server/models"
+	"github.com/yury-nazarov/goph_keeper/internal/models"
+	"github.com/yury-nazarov/goph_keeper/internal/server/repository/options"
 
 	_ "github.com/jackc/pgx/v4/stdlib"
 	"github.com/pressly/goose"
