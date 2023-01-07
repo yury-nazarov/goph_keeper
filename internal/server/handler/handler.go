@@ -90,7 +90,7 @@ func (c *Controller) SignIn(w http.ResponseWriter, r *http.Request) {
 	// Аутентифицируем пользователя
 	err = c.auth.UserLogIn(r.Context(), &user)
 	if errors.As(err, &err401) {
-		w.WriteHeader(http.StatusUnauthorized)
+		w.WriteHeader(http.StatusForbidden)
 		return
 	}
 	if errors.As(err, &err500) {
