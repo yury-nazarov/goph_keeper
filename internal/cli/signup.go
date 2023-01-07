@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/yury-nazarov/goph_keeper/internal/cli/tools"
 	"net/http"
 
 	"github.com/spf13/cobra"
@@ -14,6 +15,7 @@ var signUpCmd = &cobra.Command{
 	Short: "Create new account",
 	Long:  `Create new account`,
 	Run: func(cmd *cobra.Command, args []string) {
+		ct := tools.New()
 		apiServer := "http://127.0.0.1:8080/api/v1/auth/signup"
 
 		// Готовим тело запроса в JSON
@@ -26,8 +28,11 @@ var signUpCmd = &cobra.Command{
 		user.Token = resp.Header.Get("Authorization")
 		defer resp.Body.Close()
 
+		// Сохраняем данные для авторизации
+		ct.AuthSave(user.Token)
+
 		// Вывод в терминал
-		AuthDisplayMsg(resp.Status)
+		fmt.Println(ct.AuthDisplayMsg(resp.Status))
 	},
 }
 
