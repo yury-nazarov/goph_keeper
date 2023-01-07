@@ -4,9 +4,11 @@ go 1.18
 
 require (
 	github.com/caarlos0/env/v6 v6.10.1
+	github.com/fatih/color v1.13.0
 	github.com/go-chi/chi/v5 v5.0.8
 	github.com/jackc/pgx/v4 v4.17.2
 	github.com/pressly/goose v2.7.0+incompatible
+	github.com/rodaine/table v1.1.0
 	github.com/spf13/cobra v1.0.0
 	github.com/stretchr/testify v1.8.1
 	github.com/testcontainers/testcontainers-go v0.17.0
@@ -37,6 +39,8 @@ require (
 	github.com/klauspost/compress v1.11.13 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
+	github.com/mattn/go-colorable v0.1.12 // indirect
+	github.com/mattn/go-isatty v0.0.16 // indirect
 	github.com/moby/patternmatcher v0.5.0 // indirect
 	github.com/moby/sys/sequential v0.5.0 // indirect
 	github.com/moby/term v0.0.0-20221128092401-c43b287e0e0f // indirect

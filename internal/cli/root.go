@@ -5,9 +5,12 @@ import (
 	"github.com/yury-nazarov/goph_keeper/internal/models"
 )
 
-
-var user models.User
-var secret models.Secret
+// Переменные для мапинга из флагов
+var (
+	user models.User
+	secret models.Secret
+	id int
+)
 
 var Cmd = &cobra.Command{
 		Use:   "gkc",
