@@ -12,29 +12,19 @@ var signOutCmd = &cobra.Command{
 	Short: "Logout user",
 	Long:  `Logout user`,
 	Run: func(cmd *cobra.Command, args []string) {
+		// Инициируем вспомогательную структуру
 		ct := tools.New()
 
-		apiServer := "http://127.0.0.1:8080/api/v1/auth/signout"
-
-
-		// Отправляем в API на регистрацию
-		req, err := http.NewRequest(http.MethodDelete, apiServer, nil)
+		// Запрос в HTTP API
+		resp, err := ct.HTTPClient(fmt.Sprintf("%s/api/v1/auth/signout", ct.APIServer), http.MethodDelete, nil)
 		if err != nil {
-			fmt.Println("Connection error:", err)
-		}
-
-		ct.AuthGet()
-		req.Header.Set("Authorization", ct.Token)
-
-		client := &http.Client{}
-		resp, err := client.Do(req)
-		if err != nil {
-			fmt.Println("Connection error:", err)
+			ct.Log.Warn(err.Error())
 		}
 		defer resp.Body.Close()
 
 		// Вывод в терминал
 		fmt.Println(ct.AuthDisplayMsg(resp.Status))
+
 		// Удаляем временный файл
 		ct.AuthDel()
 	},

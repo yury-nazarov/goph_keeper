@@ -16,18 +16,17 @@ var signUpCmd = &cobra.Command{
 	Long:  `Create new account`,
 	Run: func(cmd *cobra.Command, args []string) {
 		ct := tools.New()
-		apiServer := "http://127.0.0.1:8080/api/v1/auth/signup"
 
-		// Готовим тело запроса в JSON
+		// JSON для HTTP Request
 		body, err := json.Marshal(&user)
 		if err != nil {
 			fmt.Println(err)
 		}
-		// Отправляем в API на регистрацию
-		resp, err := http.Post(apiServer, "application/json", bytes.NewBuffer(body))
+
+		// Запрос в HTTP API
+		resp, err := http.Post(fmt.Sprintf("%s/api/v1/auth/signup", ct.APIServer), "application/json", bytes.NewBuffer(body))
 		user.Token = resp.Header.Get("Authorization")
 		defer resp.Body.Close()
-
 		// Сохраняем данные для авторизации
 		ct.AuthSave(user.Token)
 
@@ -38,8 +37,11 @@ var signUpCmd = &cobra.Command{
 
 func init() {
 	Cmd.AddCommand(signUpCmd)
-	signUpCmd.Flags().StringVar(&user.Login, "login", "", "--login=username")
-	signUpCmd.Flags().StringVar(&user.Password, "password", "", "--password=username")
+	signUpCmd.Flags().StringVarP(&user.Login, "login", "l", "", "username")
+	signUpCmd.Flags().StringVarP(&user.Password, "password", "p", "", "pa$$w0rd")
+
+	signUpCmd.MarkFlagRequired("login")
+	signUpCmd.MarkFlagRequired("password")
 }
 
 

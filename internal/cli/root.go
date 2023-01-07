@@ -5,9 +5,9 @@ import (
 	"github.com/yury-nazarov/goph_keeper/internal/models"
 )
 
-// Структура для хранения логина и токена, которые получаем во время signup, signin
-// и используем в остальных методах требующих аутентификации пользователя по токену
+
 var user models.User
+var secret models.Secret
 
 var Cmd = &cobra.Command{
 		Use:   "gkc",

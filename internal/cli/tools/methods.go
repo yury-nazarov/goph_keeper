@@ -2,7 +2,9 @@ package tools
 
 import (
 	"fmt"
+	"io"
 	"log"
+	"net/http"
 	"os"
 
 	"github.com/yury-nazarov/goph_keeper/pkg/logger"
@@ -15,16 +17,21 @@ import (
 type cliTools struct {
 	// Доступ к токену прочитаному из файла
 	Token string
+	// логер
+	Log *zap.Logger
+	// Адрес сервера
+	APIServer string
 	// Путь файла куда сохраняется токен
 	storage string
-	// логер
-	log *zap.Logger
+
 }
 
 func New() *cliTools {
 	return &cliTools{
 		storage: setStorageFile(),
-		log: logger.New(),
+		Log: logger.New(),
+		// TODO: Читать из конфигурационного файла
+		APIServer: "http://127.0.0.1:8080",
 	}
 }
 
@@ -44,7 +51,7 @@ func setStorageFile() string {
 func (c *cliTools) AuthSave(token string)  {
 	file, err := os.Create(c.storage)
 	if err != nil {
-		log.Fatal("can't create file", zap.String("error", err.Error()))
+		c.Log.Fatal("can't create file", zap.String("error", err.Error()))
 	}
 
 	defer file.Close()
@@ -52,7 +59,7 @@ func (c *cliTools) AuthSave(token string)  {
 	fmt.Println("token:", token)
 	_, err = file.WriteString(token)
 	if err != nil {
-		log.Fatal("can't write to file", zap.String("error", err.Error()))
+		c.Log.Fatal("can't write to file", zap.String("error", err.Error()))
 	}
 }
 
@@ -60,9 +67,9 @@ func (c *cliTools) AuthSave(token string)  {
 func (c *cliTools) AuthGet() {
 	file, err := os.ReadFile(c.storage)
 	if err != nil {
-		c.log.Warn(fmt.Sprintf("can't read file: %s", c.storage), zap.String("error", err.Error()))
+		c.Log.Warn(fmt.Sprintf("can't read file: %s", c.storage), zap.String("error", err.Error()))
 	}
-	c.log.Info(fmt.Sprintf("read file: %s", c.storage))
+	c.Log.Info(fmt.Sprintf("read file: %s", c.storage))
 	c.Token = string(file)
 
 }
@@ -71,9 +78,9 @@ func (c *cliTools) AuthGet() {
 func (c *cliTools) AuthDel() {
 	err := os.Remove(c.storage)
 	if err != nil {
-		c.log.Warn(fmt.Sprintf("can't delete file: %s", c.storage), zap.String("error", err.Error()))
+		c.Log.Warn(fmt.Sprintf("can't delete file: %s", c.storage), zap.String("error", err.Error()))
 	} else {
-		c.log.Info(fmt.Sprintf("file: %s was deleted", c.storage))
+		c.Log.Info(fmt.Sprintf("file: %s was deleted", c.storage))
 	}
 }
 
@@ -97,4 +104,35 @@ func (c *cliTools) AuthDisplayMsg(httpStatus string) string {
 	default:
 		return"Something wrong. Please try later"
 	}
+}
+
+// HTTPClient метод для работы с HTTP API где нужна аутентификация по токену
+func (c *cliTools) HTTPClient(apiServer string, method string, body io.Reader) (*http.Response, error){
+	// Отправляем в API на регистрацию
+	req, err := http.NewRequest(method, apiServer, body)
+	if err != nil {
+		return nil, fmt.Errorf("connection error: %s", err.Error())
+	}
+
+	c.AuthGet()
+	req.Header.Set("Authorization", c.Token)
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("connection error: %s", err.Error())
+	}
+	return resp, nil
+}
+
+// Encrypt шифрует данные
+// TODO
+func (c *cliTools) Encrypt(data []byte) []byte {
+	return data
+}
+
+// Decrypt расшифровывает данные
+// TODO
+func (c *cliTools) Decrypt(data []byte) []byte {
+	return data
 }
