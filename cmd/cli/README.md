@@ -21,27 +21,32 @@ gk signout
 
 ## Secrets
 
-Создать новый секрет
+**Создать новый секрет**
 ```shell
-gk secret new --secret='{"login": "qwe", "password": "asd"}'
+gk secret new --secret='{"login": "qwe", "password": "asd"}' --name="Пароль от сейфа" --description=""
 ```
 
-Получить список секретов
+**Получить список секретов**
 ```shell
 gk secret list
 ```
 
-Получить секрет по id
+**Получить секрет по id**
 ```shell
 gk secret get --id=3
 ```
 
-Обновить секрет по id
+**Обновить секрет по id**
 ```shell
-gk secret update --id=3 --secret='{"login": "qwe1", "password": "asd123"}'
+gk secret update --id=3 --secret='{"login": "qwe1", "password": "asd123"}' --name="" --description=""
 ```
+В случае если не переданы один или несколько флагов:
+- `--secret`
+- `--name`
+- `--description`
+значения будут подставлены из тех, что сейчас определены для секрета
 
-Удалить секрет по id
+**Удалить секрет по id**
 ```shell
 gk secret delete --id=3
 ```
