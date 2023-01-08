@@ -30,20 +30,20 @@ type cliTools struct {
 
 func New() *cliTools {
 	return &cliTools{
-		storage: setStorageFile(),
-		Log: logger.New(),
+		storage: fmt.Sprintf("%s/%s", homedir(), ".gk_cli_R2D2"),
+		Log: logger.NewFile(fmt.Sprintf("%s/%s", homedir(), ".gk_cli_logs")),
 		// TODO: Читать из конфигурационного файла
 		APIServer: "http://127.0.0.1:8080",
 	}
 }
 
 // setStorageFile - создает файл в домашней директории пользователя
-func setStorageFile() string {
+func homedir() string {
 	homedir, err := os.UserHomeDir()
 	if err != nil {
 		log.Fatal("can't get user home dir", zap.String("error", err.Error()))
 	}
-	return fmt.Sprintf("%s/%s", homedir, ".gkR2D2")
+	return homedir
 }
 
 // AuthSave - сохранить токен файл.
@@ -70,7 +70,6 @@ func (c *cliTools) AuthGet() {
 	if err != nil {
 		c.Log.Warn(fmt.Sprintf("can't read file: %s", c.storage), zap.String("error", err.Error()))
 	}
-	//c.Log.Info(fmt.Sprintf("read file: %s", c.storage))
 	c.Token = string(file)
 
 }
@@ -108,7 +107,6 @@ func (c *cliTools) DisplayMsg(httpStatus string) string {
 }
 
 // HTTPClient метод для работы с HTTP API где нужна аутентификация по токену
-//func (c *cliTools) HTTPClient(apiServer string, method string, requestBody io.Reader) (httpStatus string, responseBody io.ReadCloser, err error){
 func (c *cliTools) HTTPClient(apiServer string, method string, requestBody io.Reader) (httpStatus string, responseBody []byte, err error){
 	// Отправляем в API на регистрацию
 	req, err := http.NewRequest(method, apiServer, requestBody)
@@ -150,19 +148,21 @@ func (c *cliTools) Decrypt(data []byte) []byte {
 	return data
 }
 
-
 // ListOfSecrets отформатированая таблица для вывода в терминал списка секретов
 func (c *cliTools) ListOfSecrets(secrets []models.Secret) table.Table{
 	// Формат для пользователя в терминате
 	headerFmt := color.New(color.FgGreen, color.Underline).SprintfFunc()
 	columnFmt := color.New(color.FgYellow).SprintfFunc()
 
-	tbl := table.New("ID", "Name", "Description", "Data")
-	tbl.WithHeaderFormatter(headerFmt).WithFirstColumnFormatter(columnFmt)
+	if len(secrets) != 0 {
+		tbl := table.New("ID", "Name", "Description", "Data")
+		tbl.WithHeaderFormatter(headerFmt).WithFirstColumnFormatter(columnFmt)
 
-	for _, widget := range secrets {
-		tbl.AddRow(widget.ID, widget.Name, widget.Description, widget.Data)
+		for _, widget := range secrets {
+			tbl.AddRow(widget.ID, widget.Name, widget.Description, widget.Data)
+		}
+			return tbl
 	}
+	return table.New()
 
-	return tbl
 }
