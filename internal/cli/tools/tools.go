@@ -1,16 +1,15 @@
 package tools
 
 import (
+	b64 "encoding/base64"
 	"fmt"
+	"github.com/yury-nazarov/goph_keeper/internal/models"
+	"github.com/yury-nazarov/goph_keeper/pkg/logger"
 	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
-	b64 "encoding/base64"
-
-	"github.com/yury-nazarov/goph_keeper/internal/models"
-	"github.com/yury-nazarov/goph_keeper/pkg/logger"
 
 	"github.com/fatih/color"
 	"github.com/rodaine/table"
@@ -31,12 +30,39 @@ type cliTools struct {
 }
 
 func New() *cliTools {
+	apiServer, logFile, tokenFile := initConfig()
+
 	return &cliTools{
-		storage: fmt.Sprintf("%s/%s", homedir(), ".gk_cli_R2D2"),
-		Log: logger.NewFile(fmt.Sprintf("%s/%s", homedir(), ".gk_cli_logs")),
-		// TODO: Читать из конфигурационного файла
-		APIServer: "http://127.0.0.1:8080",
+		storage: tokenFile,
+		Log: logger.NewFile(logFile),
+		APIServer: apiServer,
 	}
+}
+
+// initConfig инициализирует начальный конфиг cli клиента
+// 			  Если данных нет в переменных окружения инициирует конфиг по умолчанию
+func initConfig() (apiServer string, logFile string, tokenFile string){
+
+	// Инициализируем API сервер
+	if len(os.Getenv("GK_API")) != 0 {
+		apiServer = os.Getenv("GK_API")
+	} else {
+		apiServer = "http://127.0.0.1:8080"
+	}
+	// Инициализируем log-файл
+	if len(os.Getenv("GK_LOG")) != 0 {
+		logFile = os.Getenv("GK_LOG")
+	} else {
+		logFile = fmt.Sprintf("%s/%s", homedir(), ".gk_cli_logs")
+	}
+	// Инициализируем token-файл
+	if len(os.Getenv("GK_TOKEN")) != 0 {
+		tokenFile = os.Getenv("GK_TOKEN")
+	} else {
+		tokenFile = fmt.Sprintf("%s/%s", homedir(), ".gk_cli_r2d2")
+	}
+
+	return apiServer, logFile, tokenFile
 }
 
 // setStorageFile - создает файл в домашней директории пользователя
@@ -120,12 +146,17 @@ func (c *cliTools) HTTPClient(apiServer string, method string, requestBody io.Re
 	req.Header.Set("Authorization", c.Token)
 
 	client := &http.Client{}
+	client.CloseIdleConnections()
 	resp, err := client.Do(req)
+	if err != nil {
+		return httpStatus, responseBody, fmt.Errorf("connection error: %s", err.Error())
+	}
 	// Получаем байты из resp.Body
 	responseBody, err = c.getBody(resp.Body)
 	if err != nil {
 		return httpStatus, responseBody, fmt.Errorf("get responseBody error: %s", err.Error())
 	}
+
 	defer resp.Body.Close()
 	return resp.Status, responseBody, nil
 }
