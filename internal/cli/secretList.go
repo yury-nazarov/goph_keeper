@@ -41,7 +41,7 @@ var secretListCmd = &cobra.Command{
 		ct.ListOfSecrets(secrets).Print()
 
 		// Вывод в терминал
-		fmt.Println(ct.AuthDisplayMsg(resp.Status))
+		fmt.Println(ct.DisplayMsg(resp.Status))
 	},
 }
 

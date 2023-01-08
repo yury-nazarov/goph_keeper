@@ -39,7 +39,7 @@ var secretGetCmd = &cobra.Command{
 		fmt.Printf("%+v\n", secret)
 
 		// Вывод в терминал
-		fmt.Println(ct.AuthDisplayMsg(resp.Status))
+		fmt.Println(ct.DisplayMsg(resp.Status))
 	},
 }
 

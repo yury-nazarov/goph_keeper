@@ -2,13 +2,12 @@ package tools
 
 import (
 	"fmt"
+	"github.com/yury-nazarov/goph_keeper/internal/models"
+	"github.com/yury-nazarov/goph_keeper/pkg/logger"
 	"io"
 	"log"
 	"net/http"
 	"os"
-
-	"github.com/yury-nazarov/goph_keeper/internal/models"
-	"github.com/yury-nazarov/goph_keeper/pkg/logger"
 
 	"github.com/fatih/color"
 	"github.com/rodaine/table"
@@ -16,7 +15,7 @@ import (
 )
 
 // cliTools вспомогательная структура при работе с cli
-// описывает логер с нужным конфиом, файл хранилище токена и прочие возможноые удобства для работы
+// описывает логер с нужным конфигом, файл хранилище токена и прочие возможноые удобства для работы
 type cliTools struct {
 	// Доступ к токену прочитаному из файла
 	Token string
@@ -58,7 +57,6 @@ func (c *cliTools) AuthSave(token string)  {
 
 	defer file.Close()
 
-	fmt.Println("token:", token)
 	_, err = file.WriteString(token)
 	if err != nil {
 		c.Log.Fatal("can't write to file", zap.String("error", err.Error()))
@@ -86,8 +84,8 @@ func (c *cliTools) AuthDel() {
 	}
 }
 
-// AuthDisplayMsg выводит в терминал сообщение пользователю
-func (c *cliTools) AuthDisplayMsg(httpStatus string) string {
+// DisplayMsg выводит в терминал сообщение пользователю
+func (c *cliTools) DisplayMsg(httpStatus string) string {
 	switch httpStatus {
 	case "200 OK":
 		return "Operation success"
@@ -155,19 +153,3 @@ func (c *cliTools) ListOfSecrets(secrets []models.Secret) table.Table{
 
 	return tbl
 }
-
-//// GetOfSecrets отформатированая таблица для вывода в терминал одного секрета
-//func (c *cliTools) GetOfSecrets(secrets models.Secret) table.Table{
-//	// Формат для пользователя в терминате
-//	headerFmt := color.New(color.FgGreen, color.Underline).SprintfFunc()
-//	columnFmt := color.New(color.FgYellow).SprintfFunc()
-//
-//	tbl := table.New("Key", "Value")
-//	tbl.WithHeaderFormatter(headerFmt).WithFirstColumnFormatter(columnFmt)
-//
-//	for _, widget := range secrets {
-//		tbl.AddRow(widget.K, widget.Name, widget.Description, widget.Data)
-//	}
-//
-//	return tbl
-//}

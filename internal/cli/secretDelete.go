@@ -24,7 +24,7 @@ var secretDeleteCmd = &cobra.Command{
 		defer resp.Body.Close()
 
 		// Вывод в терминал
-		fmt.Println(ct.AuthDisplayMsg(resp.Status))
+		fmt.Println(ct.DisplayMsg(resp.Status))
 	},
 }
 

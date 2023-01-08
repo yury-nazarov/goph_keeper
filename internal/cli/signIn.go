@@ -33,7 +33,7 @@ var signInCmd = &cobra.Command{
 		ct.AuthSave(user.Token)
 
 		// Вывод в терминал
-		fmt.Println(ct.AuthDisplayMsg(resp.Status))
+		fmt.Println(ct.DisplayMsg(resp.Status))
 	},
 }
 
