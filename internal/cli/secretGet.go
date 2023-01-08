@@ -3,11 +3,12 @@ package cli
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"github.com/yury-nazarov/goph_keeper/internal/models"
 	"net/http"
 
-	"github.com/spf13/cobra"
 	"github.com/yury-nazarov/goph_keeper/internal/cli/tools"
+
+	"github.com/spf13/cobra"
 )
 
 var secretGetCmd = &cobra.Command{
@@ -19,27 +20,23 @@ var secretGetCmd = &cobra.Command{
 		ct := tools.New()
 
 		// Запрос в HTTP API
-		resp, err := ct.HTTPClient(fmt.Sprintf("%s/api/v1/secret/%d", ct.APIServer, id), http.MethodGet, nil)
-		if err != nil {
-			ct.Log.Warn(err.Error())
-		}
-		defer resp.Body.Close()
-
-		// JSON из набора байт
-		body, err := ioutil.ReadAll(resp.Body)
+		apiServer := fmt.Sprintf("%s/api/v1/secret/%d", ct.APIServer, id)
+		httpStatus, responseBody, err := ct.HTTPClient(apiServer, http.MethodGet, nil)
 		if err != nil {
 			ct.Log.Warn(err.Error())
 		}
 
-		if err = json.Unmarshal(body, &secret); err != nil {
+		// Десериализуем полученный ответ в структуру models.Secret для дальнейшего представления
+		if err = json.Unmarshal(responseBody, &secret); err != nil {
 			ct.Log.Warn(err.Error())
 		}
 
 		// Формат для пользователя в терминате
-		fmt.Printf("%+v\n", secret)
+		secrets := []models.Secret{secret}
+		ct.ListOfSecrets(secrets).Print()
 
-		// Вывод в терминал
-		fmt.Println(ct.DisplayMsg(resp.Status))
+		// Статус обработки запроса
+		fmt.Println(ct.DisplayMsg(httpStatus))
 	},
 }
 

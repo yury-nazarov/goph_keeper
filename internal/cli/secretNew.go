@@ -19,21 +19,22 @@ var secretNewCmd = &cobra.Command{
 		// Инициируем вспомогательную структуру
 		ct := tools.New()
 
-		// JSON для HTTP Request
+		// Данные полученые из флагов сериализуем в JSON для HTTP Request
 		body, err := json.Marshal(&secret)
 		if err != nil {
 			fmt.Println(err)
 		}
 
 		// Запрос в HTTP API
-		resp, err := ct.HTTPClient(fmt.Sprintf("%s/api/v1/secret/new", ct.APIServer), http.MethodPost, bytes.NewBuffer(ct.Encrypt(body)))
+		apiServer := fmt.Sprintf("%s/api/v1/secret/new", ct.APIServer)
+		requestBody := bytes.NewBuffer(ct.Encrypt(body))
+		httpStatus, _, err := ct.HTTPClient(apiServer, http.MethodPost, requestBody)
 		if err != nil {
 			ct.Log.Warn(err.Error())
 		}
-		defer resp.Body.Close()
 
-		// Вывод в терминал
-		fmt.Println(ct.DisplayMsg(resp.Status))
+		// Статус обработки запроса
+		fmt.Println(ct.DisplayMsg(httpStatus))
 	},
 }
 

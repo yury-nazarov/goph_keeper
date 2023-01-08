@@ -2,9 +2,11 @@ package cli
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
-	"github.com/yury-nazarov/goph_keeper/internal/cli/tools"
 	"net/http"
+
+	"github.com/yury-nazarov/goph_keeper/internal/cli/tools"
+
+	"github.com/spf13/cobra"
 )
 
 var signOutCmd = &cobra.Command{
@@ -15,15 +17,14 @@ var signOutCmd = &cobra.Command{
 		// Инициируем вспомогательную структуру
 		ct := tools.New()
 
-		// Запрос в HTTP API
-		resp, err := ct.HTTPClient(fmt.Sprintf("%s/api/v1/auth/signout", ct.APIServer), http.MethodDelete, nil)
+		// Запрос в HTTP API для удаления сессии
+		httpStatus, _, err := ct.HTTPClient(fmt.Sprintf("%s/api/v1/auth/signout", ct.APIServer), http.MethodDelete, nil)
 		if err != nil {
 			ct.Log.Warn(err.Error())
 		}
-		defer resp.Body.Close()
 
-		// Вывод в терминал
-		fmt.Println(ct.DisplayMsg(resp.Status))
+		// Статус обработки запроса
+		fmt.Println(ct.DisplayMsg(httpStatus))
 
 		// Удаляем временный файл
 		ct.AuthDel()

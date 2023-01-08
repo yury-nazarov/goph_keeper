@@ -17,20 +17,21 @@ var signUpCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		ct := tools.New()
 
-		// JSON для HTTP Request
+		// Данные полученые из флагов сериализуем в JSON для HTTP Request
 		body, err := json.Marshal(&user)
 		if err != nil {
 			fmt.Println(err)
 		}
 
 		// Запрос в HTTP API
-		resp, err := http.Post(fmt.Sprintf("%s/api/v1/auth/signup", ct.APIServer), "application/json", bytes.NewBuffer(body))
+		apiServer := fmt.Sprintf("%s/api/v1/auth/signup", ct.APIServer)
+		resp, err := http.Post(apiServer, "application/json", bytes.NewBuffer(body))
 		user.Token = resp.Header.Get("Authorization")
 		defer resp.Body.Close()
 		// Сохраняем данные для авторизации
 		ct.AuthSave(user.Token)
 
-		// Вывод в терминал
+		// Статус обработки запроса
 		fmt.Println(ct.DisplayMsg(resp.Status))
 	},
 }

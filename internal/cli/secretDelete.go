@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/spf13/cobra"
 	"github.com/yury-nazarov/goph_keeper/internal/cli/tools"
+
+	"github.com/spf13/cobra"
 )
 
 var secretDeleteCmd = &cobra.Command{
@@ -17,14 +18,14 @@ var secretDeleteCmd = &cobra.Command{
 		ct := tools.New()
 
 		// Запрос в HTTP API
-		resp, err := ct.HTTPClient(fmt.Sprintf("%s/api/v1/secret/delete/%d", ct.APIServer, id), http.MethodDelete, nil)
+		apiServer := fmt.Sprintf("%s/api/v1/secret/delete/%d", ct.APIServer, id)
+		httpStatus, _, err  := ct.HTTPClient(apiServer, http.MethodDelete, nil)
 		if err != nil {
 			ct.Log.Warn(err.Error())
 		}
-		defer resp.Body.Close()
 
-		// Вывод в терминал
-		fmt.Println(ct.DisplayMsg(resp.Status))
+		// Статус обработки запроса
+		fmt.Println(ct.DisplayMsg(httpStatus))
 	},
 }
 

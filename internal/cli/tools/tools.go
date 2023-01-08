@@ -5,6 +5,7 @@ import (
 	"github.com/yury-nazarov/goph_keeper/internal/models"
 	"github.com/yury-nazarov/goph_keeper/pkg/logger"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -69,7 +70,7 @@ func (c *cliTools) AuthGet() {
 	if err != nil {
 		c.Log.Warn(fmt.Sprintf("can't read file: %s", c.storage), zap.String("error", err.Error()))
 	}
-	c.Log.Info(fmt.Sprintf("read file: %s", c.storage))
+	//c.Log.Info(fmt.Sprintf("read file: %s", c.storage))
 	c.Token = string(file)
 
 }
@@ -107,11 +108,12 @@ func (c *cliTools) DisplayMsg(httpStatus string) string {
 }
 
 // HTTPClient метод для работы с HTTP API где нужна аутентификация по токену
-func (c *cliTools) HTTPClient(apiServer string, method string, body io.Reader) (*http.Response, error){
+//func (c *cliTools) HTTPClient(apiServer string, method string, requestBody io.Reader) (httpStatus string, responseBody io.ReadCloser, err error){
+func (c *cliTools) HTTPClient(apiServer string, method string, requestBody io.Reader) (httpStatus string, responseBody []byte, err error){
 	// Отправляем в API на регистрацию
-	req, err := http.NewRequest(method, apiServer, body)
+	req, err := http.NewRequest(method, apiServer, requestBody)
 	if err != nil {
-		return nil, fmt.Errorf("connection error: %s", err.Error())
+		return httpStatus, responseBody, fmt.Errorf("connection error: %s", err.Error())
 	}
 
 	c.AuthGet()
@@ -119,10 +121,21 @@ func (c *cliTools) HTTPClient(apiServer string, method string, body io.Reader) (
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
+	// Получаем байты из resp.Body
+	responseBody, err = c.getBody(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("connection error: %s", err.Error())
+		return httpStatus, responseBody, fmt.Errorf("get responseBody error: %s", err.Error())
 	}
-	return resp, nil
+	defer resp.Body.Close()
+	return resp.Status, responseBody, nil
+}
+
+func (c *cliTools) getBody(responseBody io.ReadCloser) ([]byte, error) {
+	body, err := ioutil.ReadAll(responseBody)
+	if err != nil {
+		return nil, err
+	}
+	return body, nil
 }
 
 // Encrypt шифрует данные

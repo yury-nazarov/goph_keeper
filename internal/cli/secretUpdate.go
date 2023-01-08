@@ -4,11 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/spf13/cobra"
+	"net/http"
+
 	"github.com/yury-nazarov/goph_keeper/internal/cli/tools"
 	"github.com/yury-nazarov/goph_keeper/internal/models"
-	"io/ioutil"
-	"net/http"
+
+	"github.com/spf13/cobra"
 )
 
 var secretUpdateCmd = &cobra.Command{
@@ -19,29 +20,23 @@ var secretUpdateCmd = &cobra.Command{
 		// Инициируем вспомогательную структуру
 		ct := tools.New()
 
-		// Запрос в HTTP API
-		// 1. Получаем секрет по ID
-		resp, err := ct.HTTPClient(fmt.Sprintf("%s/api/v1/secret/%d", ct.APIServer, secret.ID), http.MethodGet, nil)
+		// Запрос в HTTP API. Получаем секрет по ID
+		apiServer := fmt.Sprintf("%s/api/v1/secret/%d", ct.APIServer, secret.ID)
+		_, responseBody, err := ct.HTTPClient(apiServer, http.MethodGet, nil)
 		if err != nil {
 			ct.Log.Warn(err.Error())
 		}
-		defer resp.Body.Close()
 
-		// JSON из набора байт
-		body, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			ct.Log.Warn(err.Error())
-		}
+		// Десериализуем полученный ответ в структуру models.Secret для дальнейшего представления
 		var originSecret models.Secret
-		if err = json.Unmarshal(body, &originSecret); err != nil {
+		if err = json.Unmarshal(responseBody, &originSecret); err != nil {
 			ct.Log.Warn(err.Error())
 		}
 
-		// Формат для пользователя в терминате
-		fmt.Printf("Origin  secret: %+v\n", originSecret)
-
-
-		// Для секрета полученого из БД обновляем поля: Name, Data, Description - если они были изменены и не пустые.
+		// secret - секрет измененный пользователей
+		// originSecret - секрет полученый из БД.
+		// Для него обновляем поля:
+		//			Name, Data, Description - если они были изменены и не пустые.
 		if originSecret.Name != secret.Name && len(secret.Name) > 0 {
 			originSecret.Name = secret.Name
 		}
@@ -51,25 +46,26 @@ var secretUpdateCmd = &cobra.Command{
 		if originSecret.Description != secret.Description && len(secret.Description) > 0 {
 			originSecret.Description = secret.Description
 		}
-		// Результат
-		fmt.Printf("Updated secret: %+v\n", originSecret)
 
-		// Сериализуем в JSON отправлеяем в HTTP API
-		// JSON для HTTP Request
-		body, err = json.Marshal(&originSecret)
+		// Сериализуем originSecret в JSON отправлеяем в HTTP API
+		body, err := json.Marshal(&originSecret)
 		if err != nil {
 			fmt.Println(err)
 		}
 
-		// Запрос в HTTP API
-		resp, err = ct.HTTPClient(fmt.Sprintf("%s/api/v1/secret/update", ct.APIServer), http.MethodPut, bytes.NewBuffer(ct.Encrypt(body)))
+		// Запрос в HTTP API для обновления данных о секрете
+		apiServer = fmt.Sprintf("%s/api/v1/secret/update", ct.APIServer)
+		httpStatus, _, err  := ct.HTTPClient(apiServer, http.MethodPut, bytes.NewBuffer(ct.Encrypt(body)))
 		if err != nil {
 			ct.Log.Warn(err.Error())
 		}
-		defer resp.Body.Close()
 
-		// Вывод в терминал статус операции
-		fmt.Println(ct.DisplayMsg(resp.Status))
+		// Формат для пользователя в терминате с измененными данными
+		secrets := []models.Secret{originSecret}
+		ct.ListOfSecrets(secrets).Print()
+
+		// Статус обработки запроса
+		fmt.Println(ct.DisplayMsg(httpStatus))
 	},
 }
 
