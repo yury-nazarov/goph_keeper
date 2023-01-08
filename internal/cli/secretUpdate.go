@@ -47,22 +47,19 @@ var secretUpdateCmd = &cobra.Command{
 			originSecret.Description = secret.Description
 		}
 
+		// Шифруем секрет
+		originSecret.Data = ct.Encrypt([]byte(originSecret.Data))
 		// Сериализуем originSecret в JSON отправлеяем в HTTP API
 		body, err := json.Marshal(&originSecret)
 		if err != nil {
 			fmt.Println(err)
 		}
-
 		// Запрос в HTTP API для обновления данных о секрете
 		apiServer = fmt.Sprintf("%s/api/v1/secret/update", ct.APIServer)
-		httpStatus, _, err  := ct.HTTPClient(apiServer, http.MethodPut, bytes.NewBuffer(ct.Encrypt(body)))
+		httpStatus, _, err  := ct.HTTPClient(apiServer, http.MethodPut, bytes.NewBuffer(body))
 		if err != nil {
 			ct.Log.Warn(err.Error())
 		}
-
-		// Формат для пользователя в терминате с измененными данными
-		secrets := []models.Secret{originSecret}
-		ct.ListOfSecrets(secrets).Print()
 
 		// Статус обработки запроса
 		fmt.Println(ct.DisplayMsg(httpStatus))

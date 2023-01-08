@@ -19,6 +19,8 @@ var secretNewCmd = &cobra.Command{
 		// Инициируем вспомогательную структуру
 		ct := tools.New()
 
+		// Шифруем секрет
+		secret.Data = ct.Encrypt([]byte(secret.Data))
 		// Данные полученые из флагов сериализуем в JSON для HTTP Request
 		body, err := json.Marshal(&secret)
 		if err != nil {
@@ -27,7 +29,7 @@ var secretNewCmd = &cobra.Command{
 
 		// Запрос в HTTP API
 		apiServer := fmt.Sprintf("%s/api/v1/secret/new", ct.APIServer)
-		requestBody := bytes.NewBuffer(ct.Encrypt(body))
+		requestBody := bytes.NewBuffer(body)
 		httpStatus, _, err := ct.HTTPClient(apiServer, http.MethodPost, requestBody)
 		if err != nil {
 			ct.Log.Warn(err.Error())

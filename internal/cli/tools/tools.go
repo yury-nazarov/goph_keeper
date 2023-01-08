@@ -2,13 +2,15 @@ package tools
 
 import (
 	"fmt"
-	"github.com/yury-nazarov/goph_keeper/internal/models"
-	"github.com/yury-nazarov/goph_keeper/pkg/logger"
 	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+	b64 "encoding/base64"
+
+	"github.com/yury-nazarov/goph_keeper/internal/models"
+	"github.com/yury-nazarov/goph_keeper/pkg/logger"
 
 	"github.com/fatih/color"
 	"github.com/rodaine/table"
@@ -128,6 +130,7 @@ func (c *cliTools) HTTPClient(apiServer string, method string, requestBody io.Re
 	return resp.Status, responseBody, nil
 }
 
+// getBody получает тело запроса
 func (c *cliTools) getBody(responseBody io.ReadCloser) ([]byte, error) {
 	body, err := ioutil.ReadAll(responseBody)
 	if err != nil {
@@ -137,15 +140,18 @@ func (c *cliTools) getBody(responseBody io.ReadCloser) ([]byte, error) {
 }
 
 // Encrypt шифрует данные
-// TODO
-func (c *cliTools) Encrypt(data []byte) []byte {
-	return data
+func (c *cliTools) Encrypt(data []byte) string {
+	encData := b64.StdEncoding.EncodeToString(data)
+	return encData
 }
 
 // Decrypt расшифровывает данные
-// TODO
-func (c *cliTools) Decrypt(data []byte) []byte {
-	return data
+func (c *cliTools) Decrypt(encData string) string {
+	data, err := b64.StdEncoding.DecodeString(encData)
+	if err != nil {
+		c.Log.Warn("can't decrypt secret", zap.String("error", err.Error()))
+	}
+	return string(data)
 }
 
 // ListOfSecrets отформатированая таблица для вывода в терминал списка секретов
@@ -158,8 +164,11 @@ func (c *cliTools) ListOfSecrets(secrets []models.Secret) table.Table{
 		tbl := table.New("ID", "Name", "Description", "Data")
 		tbl.WithHeaderFormatter(headerFmt).WithFirstColumnFormatter(columnFmt)
 
-		for _, widget := range secrets {
-			tbl.AddRow(widget.ID, widget.Name, widget.Description, widget.Data)
+		for _, secret := range secrets {
+			// Расшифровываем секрет
+			secret.Data = c.Decrypt(secret.Data)
+			// Добавляем в строку
+			tbl.AddRow(secret.ID, secret.Name, secret.Description, secret.Data)
 		}
 			return tbl
 	}
