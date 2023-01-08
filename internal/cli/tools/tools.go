@@ -146,7 +146,6 @@ func (c *cliTools) HTTPClient(apiServer string, method string, requestBody io.Re
 	req.Header.Set("Authorization", c.Token)
 
 	client := &http.Client{}
-	client.CloseIdleConnections()
 	resp, err := client.Do(req)
 	if err != nil {
 		return httpStatus, responseBody, fmt.Errorf("connection error: %s", err.Error())
