@@ -37,7 +37,7 @@ func (sts *StorageTestSuite) SetupTest() {
 	// Конфиг для подключения к БД
 	opts := options.Config{
 		MigrateFile: "./migrations_test",
-		//MigrateTo: "02",
+		//MigrateTo: "002",
 		DB: fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable connect_timeout=5",
 			storageContainer.Host(),
 			storageContainer.Port(sts.T()),
@@ -72,7 +72,6 @@ func (sts *StorageTestSuite) TearDownTest() {
 ////////// Auth
 
 func (sts *StorageTestSuite) Test_psql_CreateUser() {
-
 	type args struct {
 		ctx      context.Context
 		login    string
@@ -85,7 +84,7 @@ func (sts *StorageTestSuite) Test_psql_CreateUser() {
 		wantErr bool
 	}{
 		{
-			name: "Crete new user",
+			name: "Test_1",
 			args: args{
 				ctx: context.Background(),
 				login: "user_2",
@@ -123,7 +122,7 @@ func (sts *StorageTestSuite) Test_psql_UserExist() {
 		wantErr bool
 	}{
 		{
-			name: "UserExist_1_success: Пользователь существует",
+			name: "Test_1 Пользователь существует",
 			args: args{
 				ctx: context.Background(),
 				login: "login_1",
@@ -132,7 +131,7 @@ func (sts *StorageTestSuite) Test_psql_UserExist() {
 			wantErr: false,
 		},
 		{
-			name: "UserExist_2_success: Пользоватлея не существует",
+			name: "Test_2 Пользоватлея не существует",
 			args: args{
 				ctx: context.Background(),
 				login: "barabashka",
@@ -169,7 +168,7 @@ func (sts *StorageTestSuite) Test_psql_UserIsValid() {
 		wantErr bool
 	}{
 		{
-			name: "UserIsValid_1_success",
+			name: "Test_1",
 			args: args{
 				ctx: context.Background(),
 				user: models.User{
@@ -212,7 +211,7 @@ func (sts *StorageTestSuite) Test_psql_AddSecret() {
 		wantErr bool
 	}{
 		{
-			name: "AddSecret #1",
+			name: "Test_1",
 			args: args{
 				ctx: context.Background(),
 				secret: models.Secret{
@@ -255,7 +254,7 @@ func (sts *StorageTestSuite) Test_psql_GetSecretByID() {
 		wantErr bool
 	}{
 		{
-			name: "GetSecretByID_1",
+			name: "Test_1",
 			args: args{
 				ctx: context.Background(),
 				secret: models.Secret{
@@ -301,7 +300,7 @@ func (sts *StorageTestSuite) Test_psql_GetSecretList() {
 		wantErr        bool
 	}{
 		{
-			name: "GetSecretList_1",
+			name: "Test_1",
 			args: args{
 				ctx: context.Background(),
 				userID: 1,
@@ -353,7 +352,7 @@ func (sts *StorageTestSuite) Test_psql_UpdateSecretByID() {
 		wantErr bool
 	}{
 		{
-			name: "UpdateSecretByID_1",
+			name: "Test_1",
 			args: args{
 				ctx: context.Background(),
 				secret: models.Secret{
@@ -387,7 +386,7 @@ func (sts *StorageTestSuite) Test_psql_DeleteSecretByID() {
 		wantErr bool
 	}{
 		{
-			name: "DeleteSecretByID_1_success",
+			name: "Test_1",
 			args: args{
 				ctx: context.Background(),
 				secret: models.Secret{
