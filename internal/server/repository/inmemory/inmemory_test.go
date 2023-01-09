@@ -58,7 +58,7 @@ func Test_inmemorySessionStorage_GetUserID(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "получить userID по токену",
+			name: "Test_1",
 			args: args{
 				ctx: context.Background(),
 				token: "123",
@@ -101,7 +101,7 @@ func Test_inmemorySessionStorage_DeleteToken(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "Удалить сессию по токену",
+			name: "Test_1",
 			args: args{
 				ctx: context.Background(),
 				token: "123",
@@ -128,7 +128,7 @@ func Test_inmemorySessionStorage_Close(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "завершаем работу сесочной",
+			name: "Test_1 завершаем работу сесочной",
 			wantErr: false,
 		},
 		// TODO: Add test cases.
