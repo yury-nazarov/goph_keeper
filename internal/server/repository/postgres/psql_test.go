@@ -8,8 +8,8 @@ import (
 
 	"github.com/yury-nazarov/goph_keeper/internal/models"
 	"github.com/yury-nazarov/goph_keeper/internal/server/repository/options"
-	"github.com/yury-nazarov/goph_keeper/internal/server/repository/postgres/testhelpers"
 	"github.com/yury-nazarov/goph_keeper/pkg/logger"
+	"github.com/yury-nazarov/goph_keeper/pkg/testhelpers"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
