@@ -5,7 +5,6 @@ import (
 	"crypto/md5"
 	"crypto/rand"
 	"fmt"
-
 	"github.com/yury-nazarov/goph_keeper/internal/models"
 	"github.com/yury-nazarov/goph_keeper/internal/server/repository/inmemory"
 	"github.com/yury-nazarov/goph_keeper/internal/server/repository/postgres"
@@ -41,6 +40,14 @@ func New(log *zap.Logger, sessions inmemory.Sessions, db postgres.DB) *auth {
 
 // RegisterUser - логика создания нового пользователя
 func (a *auth) RegisterUser(ctx context.Context, user *models.User) error {
+	// Пустые имя пользователя или пароль
+	if len(user.Login) == 0 || len(user.Password) == 0 {
+		a.log.Info("Empty username or password",
+			zap.String("method", "Auth.RegisterUser"),
+			zap.String("user.Login", user.Login))
+		return tools.NewErr401("")
+	}
+
 	// Проверяем наличие логина в БД
 	ok, err := a.db.UserExist(ctx, user.Login)
 	if err != nil {
