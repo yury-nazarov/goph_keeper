@@ -166,7 +166,6 @@ func (c *Controller) SecretList(w http.ResponseWriter, r *http.Request) {
 
 	// Список секретов успешно отправлен пользователю
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
 	_, err = w.Write(secretsJSON)
 	if err != nil {
 		c.log.Warn("can't write response to client",
@@ -176,6 +175,7 @@ func (c *Controller) SecretList(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	w.WriteHeader(http.StatusOK)
 }
 
 // GetSecretByID вернет секрет по ID
@@ -219,7 +219,6 @@ func (c *Controller) GetSecretByID(w http.ResponseWriter, r *http.Request) {
 
 	// Секрет успешно отправлен пользователю
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
 	_, err = w.Write(secretJSON)
 	if err != nil {
 		c.log.Warn("can't write response to client",
@@ -231,6 +230,7 @@ func (c *Controller) GetSecretByID(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	w.WriteHeader(http.StatusOK)
 }
 
 // UpdateSecretByID обновление секрета по ID
