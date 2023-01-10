@@ -22,7 +22,6 @@ func New() *zap.Logger {
 
 }
 
-
 func NewFile(filePath string) *zap.Logger {
 	config := zap.NewProductionEncoderConfig()
 	config.EncodeTime = zapcore.TimeEncoderOfLayout("2006-01-02 15:04:05.000")

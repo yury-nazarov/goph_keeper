@@ -40,7 +40,7 @@ var secretUpdateCmd = &cobra.Command{
 		if originSecret.Name != secret.Name && len(secret.Name) > 0 {
 			originSecret.Name = secret.Name
 		}
-		if originSecret.Data != secret.Data && len(secret.Data) > 0  {
+		if originSecret.Data != secret.Data && len(secret.Data) > 0 {
 			originSecret.Data = secret.Data
 		}
 		if originSecret.Description != secret.Description && len(secret.Description) > 0 {
@@ -56,7 +56,7 @@ var secretUpdateCmd = &cobra.Command{
 		}
 		// Запрос в HTTP API для обновления данных о секрете
 		apiServer = fmt.Sprintf("%s/api/v1/secret/update", ct.APIServer)
-		httpStatus, _, err  := ct.HTTPClient(apiServer, http.MethodPut, bytes.NewBuffer(body))
+		httpStatus, _, err := ct.HTTPClient(apiServer, http.MethodPut, bytes.NewBuffer(body))
 		if err != nil {
 			ct.Log.Warn(err.Error())
 		}
@@ -69,12 +69,10 @@ var secretUpdateCmd = &cobra.Command{
 func init() {
 	secretCmd.AddCommand(secretUpdateCmd)
 
-	secretUpdateCmd.Flags().IntVarP(&secret.ID, "id", "i",0, "id of secrets")
+	secretUpdateCmd.Flags().IntVarP(&secret.ID, "id", "i", 0, "id of secrets")
 	secretUpdateCmd.Flags().StringVarP(&secret.Name, "name", "n", "", "secret_name")
 	secretUpdateCmd.Flags().StringVarP(&secret.Data, "data", "d", "", "JSON secret data")
-	secretUpdateCmd.Flags().StringVarP(&secret.Description, "description", "m","", "description about secret. Optional")
+	secretUpdateCmd.Flags().StringVarP(&secret.Description, "description", "m", "", "description about secret. Optional")
 
 	secretUpdateCmd.MarkFlagRequired("id")
 }
-
-

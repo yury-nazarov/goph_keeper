@@ -4,6 +4,6 @@ import (
 	"github.com/yury-nazarov/goph_keeper/internal/cli"
 )
 
-func main(){
+func main() {
 	cli.Executor()
 }

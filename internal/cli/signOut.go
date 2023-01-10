@@ -34,5 +34,3 @@ var signOutCmd = &cobra.Command{
 func init() {
 	Cmd.AddCommand(signOutCmd)
 }
-
-

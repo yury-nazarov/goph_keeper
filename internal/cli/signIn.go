@@ -11,7 +11,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-
 var signInCmd = &cobra.Command{
 	Use:   "signin",
 	Short: "LogIn",
@@ -47,5 +46,3 @@ func init() {
 	signInCmd.MarkFlagRequired("login")
 	signInCmd.MarkFlagRequired("password")
 }
-
-

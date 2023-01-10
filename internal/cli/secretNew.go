@@ -45,10 +45,8 @@ func init() {
 
 	secretNewCmd.Flags().StringVarP(&secret.Name, "name", "n", "", "secret_name")
 	secretNewCmd.Flags().StringVarP(&secret.Data, "data", "d", "", "JSON secret data")
-	secretNewCmd.Flags().StringVarP(&secret.Description, "description", "m","", "description about secret. Optional")
+	secretNewCmd.Flags().StringVarP(&secret.Description, "description", "m", "", "description about secret. Optional")
 
 	secretNewCmd.MarkFlagRequired("name")
 	secretNewCmd.MarkFlagRequired("data")
 }
-
-

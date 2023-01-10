@@ -43,5 +43,3 @@ var secretListCmd = &cobra.Command{
 func init() {
 	secretCmd.AddCommand(secretListCmd)
 }
-
-

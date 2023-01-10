@@ -33,9 +33,9 @@ type Controller struct {
 	db       postgres.DB
 	sessions inmemory.Sessions
 	cgf      options.Config
-	log      	*zap.Logger
-	auth     	auth.Auth
-	secret     	secret.Secret
+	log      *zap.Logger
+	auth     auth.Auth
+	secret   secret.Secret
 }
 
 // NewController создает новый экземпляр контроллера который передаем в роутер
@@ -100,7 +100,6 @@ func (c *Controller) SignIn(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Authorization", user.Token)
 	w.WriteHeader(http.StatusOK)
 }
-
 
 // SignOut - выход пользователя
 func (c *Controller) SignOut(w http.ResponseWriter, r *http.Request) {
@@ -185,9 +184,9 @@ func (c *Controller) SecretList(w http.ResponseWriter, r *http.Request) {
 // GetSecretByID вернет секрет по ID
 func (c *Controller) GetSecretByID(w http.ResponseWriter, r *http.Request) {
 	var (
-		item models.Secret
+		item       models.Secret
 		secretJSON []byte
-		secretID int
+		secretID   int
 	)
 
 	// Получаем secretID из URL

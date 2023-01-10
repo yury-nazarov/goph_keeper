@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+
 	"github.com/yury-nazarov/goph_keeper/internal/models"
 	"github.com/yury-nazarov/goph_keeper/internal/server/repository/postgres"
 	"github.com/yury-nazarov/goph_keeper/pkg/tools"
@@ -28,7 +29,7 @@ type Secret interface {
 
 func NewSecret(db postgres.DB, logger *zap.Logger) *secret {
 	s := &secret{
-		db: db,
+		db:  db,
 		log: logger,
 	}
 	return s
@@ -96,7 +97,7 @@ func (s *secret) GetByID(ctx context.Context, secretID int) (secret models.Secre
 			zap.Int("userID", secret.UserID),
 			zap.Int("secretID", secret.ID),
 			zap.String("error", err.Error()),
-			)
+		)
 		return secret, tools.NewErr500("")
 	}
 	return secret, nil
@@ -106,7 +107,7 @@ func (s *secret) PutByID(ctx context.Context, item models.Secret) error {
 	var item2 models.Secret
 	// Проверяем что секрет пренадлежит этомй пользователю
 	item2, err = s.db.GetSecretByID(ctx, item)
-	if err  != nil || item.ID != item2.ID || item.UserID != item2.UserID{
+	if err != nil || item.ID != item2.ID || item.UserID != item2.UserID {
 		s.log.Warn("HTTP request isn`t authorized",
 			zap.String("method", "secret.PutByID"),
 			zap.Int("userID", item.UserID),
@@ -132,8 +133,8 @@ func (s *secret) PutByID(ctx context.Context, item models.Secret) error {
 // DeleteByID удаляет секрет
 func (s *secret) DeleteByID(ctx context.Context, secretID int) error {
 	var (
-		item 	models.Secret
-		item2 	models.Secret
+		item  models.Secret
+		item2 models.Secret
 	)
 	// Получаем userID который добавляем в контекст из middleware
 	item.UserID = ctx.Value("userID").(int)
@@ -141,7 +142,7 @@ func (s *secret) DeleteByID(ctx context.Context, secretID int) error {
 
 	// Проверяем что секрет пренадлежит этомй пользователю
 	item2, err = s.db.GetSecretByID(ctx, item)
-	if err  != nil || item.ID != item2.ID || item.UserID != item2.UserID{
+	if err != nil || item.ID != item2.ID || item.UserID != item2.UserID {
 		s.log.Warn("HTTP request isn`t authorized",
 			zap.String("method", "secret.PutByID"),
 			zap.Int("userID", item.UserID),

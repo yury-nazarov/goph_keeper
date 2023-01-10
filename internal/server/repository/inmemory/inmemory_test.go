@@ -24,8 +24,8 @@ func Test_inmemorySessionStorage_AddToken(t *testing.T) {
 		{
 			name: "Создать новую сессию:  token + userID",
 			args: args{
-				ctx: context.Background(),
-				token: "123",
+				ctx:    context.Background(),
+				token:  "123",
 				userID: 1,
 			},
 		},
@@ -39,7 +39,6 @@ func Test_inmemorySessionStorage_AddToken(t *testing.T) {
 		})
 	}
 }
-
 
 func Test_inmemorySessionStorage_GetUserID(t *testing.T) {
 	// Инициируем сесочную
@@ -60,10 +59,10 @@ func Test_inmemorySessionStorage_GetUserID(t *testing.T) {
 		{
 			name: "Test_1",
 			args: args{
-				ctx: context.Background(),
+				ctx:   context.Background(),
 				token: "123",
 			},
-			want: 1,
+			want:    1,
 			wantErr: false,
 		},
 		// TODO: Add test cases.
@@ -82,7 +81,6 @@ func Test_inmemorySessionStorage_GetUserID(t *testing.T) {
 		})
 	}
 }
-
 
 func Test_inmemorySessionStorage_DeleteToken(t *testing.T) {
 	// Инициируем сесочную
@@ -103,7 +101,7 @@ func Test_inmemorySessionStorage_DeleteToken(t *testing.T) {
 		{
 			name: "Test_1",
 			args: args{
-				ctx: context.Background(),
+				ctx:   context.Background(),
 				token: "123",
 			},
 			wantErr: false,
@@ -128,7 +126,7 @@ func Test_inmemorySessionStorage_Close(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "Test_1 завершаем работу сесочной",
+			name:    "Test_1 завершаем работу сесочной",
 			wantErr: false,
 		},
 		// TODO: Add test cases.

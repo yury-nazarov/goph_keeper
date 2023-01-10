@@ -4,8 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/yury-nazarov/goph_keeper/internal/cli/tools"
 	"net/http"
+
+	"github.com/yury-nazarov/goph_keeper/internal/cli/tools"
 
 	"github.com/spf13/cobra"
 )
@@ -44,5 +45,3 @@ func init() {
 	signUpCmd.MarkFlagRequired("login")
 	signUpCmd.MarkFlagRequired("password")
 }
-
-

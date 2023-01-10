@@ -10,9 +10,9 @@ type User struct {
 
 // Secret описывает структуру данных для работы с секретами
 type Secret struct {
-	ID 			int 	`json:"id"`
-	UserID 		int 	`json:"user_id"`
-	Name    	string 	`json:"name"`
-	Data    	string 	`json:"data"`
-	Description	string 	`json:"description"`
+	ID          int    `json:"id"`
+	UserID      int    `json:"user_id"`
+	Name        string `json:"name"`
+	Data        string `json:"data"`
+	Description string `json:"description"`
 }

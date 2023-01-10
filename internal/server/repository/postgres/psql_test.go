@@ -7,7 +7,6 @@ import (
 	"github.com/yury-nazarov/goph_keeper/internal/models"
 )
 
-
 ////////// Auth
 
 func (sts *StorageTestSuite) Test_psql_CreateUser() {
@@ -25,18 +24,18 @@ func (sts *StorageTestSuite) Test_psql_CreateUser() {
 		{
 			name: "Test_1",
 			args: args{
-				ctx: context.Background(),
-				login: "user_2",
+				ctx:      context.Background(),
+				login:    "user_2",
 				password: "password_2",
 			},
-			want: 2,
+			want:    2,
 			wantErr: false,
 		},
 		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
 		sts.Run(tt.name, func() {
-			p :=  sts.TestStorager
+			p := sts.TestStorager
 			got, err := p.CreateUser(tt.args.ctx, tt.args.login, tt.args.password)
 			if (err != nil) != tt.wantErr {
 				sts.T().Errorf("CreateUser() error = %v, wantErr %v", err, tt.wantErr)
@@ -63,19 +62,19 @@ func (sts *StorageTestSuite) Test_psql_UserExist() {
 		{
 			name: "Test_1 Пользователь существует",
 			args: args{
-				ctx: context.Background(),
+				ctx:   context.Background(),
 				login: "login_1",
 			},
-			want: true,
+			want:    true,
 			wantErr: false,
 		},
 		{
 			name: "Test_2 Пользоватлея не существует",
 			args: args{
-				ctx: context.Background(),
+				ctx:   context.Background(),
 				login: "barabashka",
 			},
-			want: false,
+			want:    false,
 			wantErr: false,
 		},
 		// TODO: Add test cases.
@@ -111,11 +110,11 @@ func (sts *StorageTestSuite) Test_psql_UserIsValid() {
 			args: args{
 				ctx: context.Background(),
 				user: models.User{
-					Login: "login_1",
+					Login:    "login_1",
 					Password: "password_1",
 				},
 			},
-			want: 1,
+			want:    1,
 			wantErr: false,
 		},
 		// TODO: Add test cases.
@@ -135,7 +134,6 @@ func (sts *StorageTestSuite) Test_psql_UserIsValid() {
 	}
 }
 
-
 //////// Secrets
 
 func (sts *StorageTestSuite) Test_psql_AddSecret() {
@@ -154,13 +152,13 @@ func (sts *StorageTestSuite) Test_psql_AddSecret() {
 			args: args{
 				ctx: context.Background(),
 				secret: models.Secret{
-						UserID: 4,
-						Name: "name_4",
-						Data: "data_4",
-						Description: "description_4",
+					UserID:      4,
+					Name:        "name_4",
+					Data:        "data_4",
+					Description: "description_4",
 				},
 			},
-			want: 4,
+			want:    4,
 			wantErr: false,
 		},
 		// TODO: Add test cases.
@@ -180,7 +178,6 @@ func (sts *StorageTestSuite) Test_psql_AddSecret() {
 	}
 }
 
-
 func (sts *StorageTestSuite) Test_psql_GetSecretByID() {
 	type args struct {
 		ctx    context.Context
@@ -197,15 +194,15 @@ func (sts *StorageTestSuite) Test_psql_GetSecretByID() {
 			args: args{
 				ctx: context.Background(),
 				secret: models.Secret{
-					ID: 1,
+					ID:     1,
 					UserID: 1,
 				},
 			},
 			want: models.Secret{
-				ID: 1,
-				UserID: 1,
-				Name: "name_1",
-				Data: "data_1",
+				ID:          1,
+				UserID:      1,
+				Name:        "name_1",
+				Data:        "data_1",
 				Description: "description_1",
 			},
 			wantErr: false,
@@ -241,27 +238,26 @@ func (sts *StorageTestSuite) Test_psql_GetSecretList() {
 		{
 			name: "Test_1",
 			args: args{
-				ctx: context.Background(),
+				ctx:    context.Background(),
 				userID: 1,
 			},
 			wantSecretList: []models.Secret{
 				{
-					ID: 1,
-					UserID: 1,
-					Name: "name_1",
-					Data: "data_1",
+					ID:          1,
+					UserID:      1,
+					Name:        "name_1",
+					Data:        "data_1",
 					Description: "description_1",
 				},
 				{
-					ID: 2,
-					UserID: 1,
-					Name: "name_2",
-					Data: "data_2",
+					ID:          2,
+					UserID:      1,
+					Name:        "name_2",
+					Data:        "data_2",
 					Description: "description_2",
 				},
 			},
 			wantErr: false,
-
 		},
 		// TODO: Add test cases.
 	}
@@ -295,8 +291,8 @@ func (sts *StorageTestSuite) Test_psql_UpdateSecretByID() {
 			args: args{
 				ctx: context.Background(),
 				secret: models.Secret{
-					Name: "name_25",
-					Data: "data_25",
+					Name:        "name_25",
+					Data:        "data_25",
 					Description: "description_25",
 				},
 			},
@@ -329,7 +325,7 @@ func (sts *StorageTestSuite) Test_psql_DeleteSecretByID() {
 			args: args{
 				ctx: context.Background(),
 				secret: models.Secret{
-					ID: 1,
+					ID:     1,
 					UserID: 1,
 				},
 			},
@@ -346,5 +342,3 @@ func (sts *StorageTestSuite) Test_psql_DeleteSecretByID() {
 		})
 	}
 }
-
-

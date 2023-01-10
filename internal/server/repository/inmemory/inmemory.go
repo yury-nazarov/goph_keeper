@@ -4,8 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"go.uber.org/zap"
 	"sync"
+
+	"go.uber.org/zap"
 )
 
 // Реализация Inmemory Cache в виде мапы.

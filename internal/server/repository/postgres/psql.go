@@ -87,8 +87,6 @@ func (p *psql) migrations(migrateTo string, migrateFile string) error {
 	return nil
 }
 
-
-
 // UserExist проверяет наличие пользвоателя в БД, вернет:
 //			 true, nil -  если пользователь уже есть в БД
 //           false, nil - если пользователя нет в БД
@@ -146,7 +144,7 @@ func (p *psql) AddSecret(ctx context.Context, secret models.Secret) (int, error)
 }
 
 // GetSecretList получает из БД список секретов по userID
-func (p *psql) GetSecretList(ctx context.Context, userID int) (secretList []models.Secret, err error)  {
+func (p *psql) GetSecretList(ctx context.Context, userID int) (secretList []models.Secret, err error) {
 	var secret models.Secret
 	rows, err := p.db.QueryContext(ctx, `SELECT id, user_id, name, data, description FROM app_secret WHERE user_id=$1`, userID)
 	if err != nil {

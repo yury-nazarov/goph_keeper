@@ -2,16 +2,17 @@ package options
 
 import (
 	"flag"
+
 	"github.com/caarlos0/env/v6"
 )
 
 // Сервис можно запустить как с помощью ключей, так и используя переменные окружения
 
 type Config struct {
-	Host           	string `env:"HOST"`
-	Port           	int `env:"PORT"`
-	DB              string `env:"DATABASE_URI"`
-	MigrateTo string `env:"MIGRATE_TO"`
+	Host        string `env:"HOST"`
+	Port        int    `env:"PORT"`
+	DB          string `env:"DATABASE_URI"`
+	MigrateTo   string `env:"MIGRATE_TO"`
 	MigrateFile string `env:"MIGRATE_FILE"`
 }
 

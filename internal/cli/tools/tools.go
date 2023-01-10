@@ -3,13 +3,14 @@ package tools
 import (
 	b64 "encoding/base64"
 	"fmt"
-	"github.com/yury-nazarov/goph_keeper/internal/models"
-	"github.com/yury-nazarov/goph_keeper/pkg/logger"
 	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/yury-nazarov/goph_keeper/internal/models"
+	"github.com/yury-nazarov/goph_keeper/pkg/logger"
 
 	"github.com/fatih/color"
 	"github.com/rodaine/table"
@@ -33,15 +34,15 @@ func New() *cliTools {
 	apiServer, logFile, tokenFile := initConfig()
 
 	return &cliTools{
-		storage: tokenFile,
-		Log: logger.NewFile(logFile),
+		storage:   tokenFile,
+		Log:       logger.NewFile(logFile),
 		APIServer: apiServer,
 	}
 }
 
 // initConfig инициализирует начальный конфиг cli клиента
 // 			  Если данных нет в переменных окружения инициирует конфиг по умолчанию
-func initConfig() (apiServer string, logFile string, tokenFile string){
+func initConfig() (apiServer string, logFile string, tokenFile string) {
 
 	// Инициализируем API сервер
 	if len(os.Getenv("GK_API")) != 0 {
@@ -78,7 +79,7 @@ func homedir() string {
 // 			  т.к. для cli клиента нет постоянного рантайма,
 // 			  сохраняем токен во временный файл до логаута.
 //			  При новом логине файл перезаписывается.
-func (c *cliTools) AuthSave(token string)  {
+func (c *cliTools) AuthSave(token string) {
 	file, err := os.Create(c.storage)
 	if err != nil {
 		c.Log.Fatal("can't create file", zap.String("error", err.Error()))
@@ -118,24 +119,24 @@ func (c *cliTools) DisplayMsg(httpStatus string) string {
 	case "200 OK":
 		return "Operation success"
 	case "201 Created":
-		return"Operation success"
+		return "Operation success"
 	case "400 Bad Request":
-		return"Request format error"
+		return "Request format error"
 	case "401 Unauthorized":
-		return"Invalid token"
+		return "Invalid token"
 	case "403 Forbidden":
-		return"Incorrect login or password"
+		return "Incorrect login or password"
 	case "409 Conflict":
-		return"Login is already exist"
+		return "Login is already exist"
 	case "500 Internal Server Error":
-		return"Internal Server Error"
+		return "Internal Server Error"
 	default:
-		return"Something wrong. Please try later"
+		return "Something wrong. Please try later"
 	}
 }
 
 // HTTPClient метод для работы с HTTP API где нужна аутентификация по токену
-func (c *cliTools) HTTPClient(apiServer string, method string, requestBody io.Reader) (httpStatus string, responseBody []byte, err error){
+func (c *cliTools) HTTPClient(apiServer string, method string, requestBody io.Reader) (httpStatus string, responseBody []byte, err error) {
 	// Отправляем в API на регистрацию
 	req, err := http.NewRequest(method, apiServer, requestBody)
 	if err != nil {
@@ -185,7 +186,7 @@ func (c *cliTools) Decrypt(encData string) string {
 }
 
 // ListOfSecrets отформатированая таблица для вывода в терминал списка секретов
-func (c *cliTools) ListOfSecrets(secrets []models.Secret) table.Table{
+func (c *cliTools) ListOfSecrets(secrets []models.Secret) table.Table {
 	// Формат для пользователя в терминате
 	headerFmt := color.New(color.FgGreen, color.Underline).SprintfFunc()
 	columnFmt := color.New(color.FgYellow).SprintfFunc()
@@ -200,7 +201,7 @@ func (c *cliTools) ListOfSecrets(secrets []models.Secret) table.Table{
 			// Добавляем в строку
 			tbl.AddRow(secret.ID, secret.Name, secret.Description, secret.Data)
 		}
-			return tbl
+		return tbl
 	}
 	return table.New()
 

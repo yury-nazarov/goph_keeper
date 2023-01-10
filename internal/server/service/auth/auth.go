@@ -5,6 +5,7 @@ import (
 	"crypto/md5"
 	"crypto/rand"
 	"fmt"
+
 	"github.com/yury-nazarov/goph_keeper/internal/models"
 	"github.com/yury-nazarov/goph_keeper/internal/server/repository/inmemory"
 	"github.com/yury-nazarov/goph_keeper/internal/server/repository/postgres"
@@ -164,7 +165,7 @@ func (a *auth) LogOutUser(ctx context.Context, token string) error {
 			zap.String("method", "Auth.LogOutUser"),
 			zap.String("token", token),
 			zap.String("error", err.Error()))
-		return tools.NewErr404( "")
+		return tools.NewErr404("")
 	}
 
 	// Если есть, удаляем сессию

@@ -3,8 +3,9 @@ package cli
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/yury-nazarov/goph_keeper/internal/models"
 	"net/http"
+
+	"github.com/yury-nazarov/goph_keeper/internal/models"
 
 	"github.com/yury-nazarov/goph_keeper/internal/cli/tools"
 
@@ -42,9 +43,7 @@ var secretGetCmd = &cobra.Command{
 
 func init() {
 	secretCmd.AddCommand(secretGetCmd)
-	secretGetCmd.Flags().IntVarP(&id, "id", "i",0, "id of secrets")
+	secretGetCmd.Flags().IntVarP(&id, "id", "i", 0, "id of secrets")
 
 	secretGetCmd.MarkFlagRequired("id")
 }
-
-

@@ -19,7 +19,7 @@ var secretDeleteCmd = &cobra.Command{
 
 		// Запрос в HTTP API
 		apiServer := fmt.Sprintf("%s/api/v1/secret/delete/%d", ct.APIServer, id)
-		httpStatus, _, err  := ct.HTTPClient(apiServer, http.MethodDelete, nil)
+		httpStatus, _, err := ct.HTTPClient(apiServer, http.MethodDelete, nil)
 		if err != nil {
 			ct.Log.Warn(err.Error())
 		}
@@ -31,9 +31,7 @@ var secretDeleteCmd = &cobra.Command{
 
 func init() {
 	secretCmd.AddCommand(secretDeleteCmd)
-	secretDeleteCmd.Flags().IntVarP(&id, "id", "i",0, "id of secrets")
+	secretDeleteCmd.Flags().IntVarP(&id, "id", "i", 0, "id of secrets")
 
 	secretDeleteCmd.MarkFlagRequired("id")
 }
-
-

@@ -64,4 +64,3 @@ func TestStorageTestSuite(t *testing.T) {
 func (sts *StorageTestSuite) TearDownTest() {
 	sts.container.Close(sts.T())
 }
-

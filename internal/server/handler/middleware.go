@@ -3,8 +3,9 @@ package handler
 import (
 	"context"
 
-	"go.uber.org/zap"
 	"net/http"
+
+	"go.uber.org/zap"
 )
 
 // mwTokenAuth 	проверяет наличие токена в sessions, если есть прикрепляет userID к

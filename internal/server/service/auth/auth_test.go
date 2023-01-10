@@ -2,10 +2,10 @@ package auth
 
 import (
 	"context"
+
 	"github.com/yury-nazarov/goph_keeper/internal/models"
 	"github.com/yury-nazarov/goph_keeper/pkg/logger"
 )
-
 
 func (sts *StorageTestSuite) Test_auth_RegisterUser() {
 
@@ -23,10 +23,10 @@ func (sts *StorageTestSuite) Test_auth_RegisterUser() {
 			args: args{
 				ctx: context.Background(),
 				user: &models.User{
-					ID: 1,
-					Login: "username_1",
+					ID:       1,
+					Login:    "username_1",
 					Password: "password_1",
-					Token: "123",
+					Token:    "123",
 				},
 			},
 			wantErr: false,
@@ -36,10 +36,10 @@ func (sts *StorageTestSuite) Test_auth_RegisterUser() {
 			args: args{
 				ctx: context.Background(),
 				user: &models.User{
-					ID: 1,
-					Login: "username_1",
+					ID:       1,
+					Login:    "username_1",
 					Password: "password_1",
-					Token: "123",
+					Token:    "123",
 				},
 			},
 			wantErr: true,
@@ -49,10 +49,10 @@ func (sts *StorageTestSuite) Test_auth_RegisterUser() {
 			args: args{
 				ctx: context.Background(),
 				user: &models.User{
-					ID: 1,
-					Login: "",
+					ID:       1,
+					Login:    "",
 					Password: "",
-					Token: "123",
+					Token:    "123",
 				},
 			},
 			wantErr: true,
@@ -89,7 +89,7 @@ func (sts *StorageTestSuite) Test_auth_UserLogIn() {
 			args: args{
 				ctx: context.Background(),
 				user: &models.User{
-					Login: "username_1",
+					Login:    "username_1",
 					Password: "password_1",
 				},
 			},
@@ -100,7 +100,7 @@ func (sts *StorageTestSuite) Test_auth_UserLogIn() {
 			args: args{
 				ctx: context.Background(),
 				user: &models.User{
-					Login: "username_1",
+					Login:    "username_1",
 					Password: "123",
 				},
 			},
@@ -111,7 +111,7 @@ func (sts *StorageTestSuite) Test_auth_UserLogIn() {
 			args: args{
 				ctx: context.Background(),
 				user: &models.User{
-					Login: "",
+					Login:    "",
 					Password: "",
 				},
 			},
@@ -127,7 +127,7 @@ func (sts *StorageTestSuite) Test_auth_UserLogIn() {
 				db:       sts.TestDB,
 			}
 			// Регистритуем пользователя.
-			_ = a.RegisterUser(tt.args.ctx, &models.User{ Login: "username_1", Password: "password_1"})
+			_ = a.RegisterUser(tt.args.ctx, &models.User{Login: "username_1", Password: "password_1"})
 			// Проверяем вход
 			if err := a.UserLogIn(tt.args.ctx, tt.args.user); (err != nil) != tt.wantErr {
 				sts.T().Errorf("UserLogIn() error = %v, wantErr %v", err, tt.wantErr)
@@ -135,6 +135,7 @@ func (sts *StorageTestSuite) Test_auth_UserLogIn() {
 		})
 	}
 }
+
 //
 //func (sts *StorageTestSuite) Test_auth_LogOutUser() {
 //
@@ -178,8 +179,8 @@ func (sts *StorageTestSuite) Test_auth_createToken() {
 		wantErr bool
 	}{
 		{
-			name: "Test_1",
-			want: "123",
+			name:    "Test_1",
+			want:    "123",
 			wantErr: false,
 		},
 		// TODO: Add test cases.
@@ -214,9 +215,9 @@ func (sts *StorageTestSuite) Test_auth_hashPassword() {
 		password string
 	}
 	tests := []struct {
-		name   string
-		args   args
-		want   string
+		name string
+		args args
+		want string
 	}{
 		{
 			name: "Test_1",
