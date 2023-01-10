@@ -97,7 +97,9 @@ func (c *cliTools) AuthSave(token string) {
 func (c *cliTools) AuthGet() {
 	file, err := os.ReadFile(c.storage)
 	if err != nil {
-		c.Log.Warn(fmt.Sprintf("can't read file: %s", c.storage), zap.String("error", err.Error()))
+		c.Log.Warn("can't read file",
+			zap.String("file", c.storage),
+			zap.String("error", err.Error()))
 	}
 	c.Token = string(file)
 
