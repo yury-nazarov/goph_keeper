@@ -53,7 +53,6 @@ func NewController(db postgres.DB, sessions inmemory.Sessions, cfg options.Confi
 
 func (c *Controller) Version(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("v001"))
-	return
 }
 
 // SignUp регистрация нового пользователя
@@ -138,7 +137,6 @@ func (c *Controller) SecretNew(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusCreated)
-	return
 }
 
 // SecretList - получить список секретов
@@ -178,7 +176,6 @@ func (c *Controller) SecretList(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	return
 }
 
 // GetSecretByID вернет секрет по ID
@@ -234,8 +231,6 @@ func (c *Controller) GetSecretByID(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	return
-
 }
 
 // UpdateSecretByID обновление секрета по ID
@@ -273,7 +268,6 @@ func (c *Controller) UpdateSecretByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusCreated)
-	return
 }
 
 // DeleteSecretByID удалить секрет
@@ -293,5 +287,4 @@ func (c *Controller) DeleteSecretByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusCreated)
-	return
 }
