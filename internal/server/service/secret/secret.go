@@ -144,7 +144,7 @@ func (s *secret) DeleteByID(ctx context.Context, secretID int) error {
 	item2, err = s.db.GetSecretByID(ctx, item)
 	if err != nil || item.ID != item2.ID || item.UserID != item2.UserID {
 		s.log.Warn("HTTP request isn`t authorized",
-			zap.String("method", "secret.PutByID"),
+			zap.String("method", "secret.DeleteByID"),
 			zap.Int("userID", item.UserID),
 			zap.Int("secretID", item.ID),
 			zap.String("error", err.Error()))
@@ -155,7 +155,7 @@ func (s *secret) DeleteByID(ctx context.Context, secretID int) error {
 	err = s.db.DeleteSecretByID(ctx, item)
 	if err != nil {
 		s.log.Warn("can't delete secret",
-			zap.String("method", "secret.PutByID"),
+			zap.String("method", "secret.DeleteByID"),
 			zap.Int("userID", item.UserID),
 			zap.Int("secretID", item.ID),
 			zap.String("error", err.Error()))
