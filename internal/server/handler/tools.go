@@ -1,4 +1,4 @@
-package tools
+package handler
 
 import (
 	"encoding/json"
@@ -21,3 +21,4 @@ func JSONUnmarshal(r *http.Request, anyData interface{}) error {
 	}
 	return nil
 }
+

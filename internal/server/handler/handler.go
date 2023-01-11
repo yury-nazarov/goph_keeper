@@ -7,15 +7,13 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/yury-nazarov/goph_keeper/internal/models"
 	"github.com/yury-nazarov/goph_keeper/internal/server/repository/inmemory"
 	"github.com/yury-nazarov/goph_keeper/internal/server/repository/options"
 	"github.com/yury-nazarov/goph_keeper/internal/server/repository/postgres"
 	"github.com/yury-nazarov/goph_keeper/internal/server/service/auth"
 	"github.com/yury-nazarov/goph_keeper/internal/server/service/secret"
-	"github.com/yury-nazarov/goph_keeper/pkg/tools"
-
-	"github.com/go-chi/chi/v5"
 	"go.uber.org/zap"
 )
 
@@ -52,7 +50,7 @@ func (c *Controller) Version(w http.ResponseWriter, r *http.Request) {
 func (c *Controller) SignUp(w http.ResponseWriter, r *http.Request) {
 	var user models.User
 	// Извлекаем login, pwd из HTTP запроса
-	if err = tools.JSONUnmarshal(r, &user); err != nil {
+	if err = JSONUnmarshal(r, &user); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -80,7 +78,7 @@ func (c *Controller) SignUp(w http.ResponseWriter, r *http.Request) {
 func (c *Controller) SignIn(w http.ResponseWriter, r *http.Request) {
 	var user models.User
 	// Извлекаем login, pwd из HTTP запроса
-	if err = tools.JSONUnmarshal(r, &user); err != nil {
+	if err = JSONUnmarshal(r, &user); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -120,7 +118,7 @@ func (c *Controller) SignOut(w http.ResponseWriter, r *http.Request) {
 func (c *Controller) SecretNew(w http.ResponseWriter, r *http.Request) {
 	var item models.Secret
 	// Извлекаем name, data, description из HTTP запроса
-	if err = tools.JSONUnmarshal(r, &item); err != nil {
+	if err = JSONUnmarshal(r, &item); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -242,7 +240,7 @@ func (c *Controller) UpdateSecretByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Извлекаем id, name, data, description из HTTP запроса
-	if err = tools.JSONUnmarshal(r, &secretItem); err != nil {
+	if err = JSONUnmarshal(r, &secretItem); err != nil {
 		c.log.Warn("can't unmarshal json",
 			zap.String("method", "handler.UpdateSecretByID"),
 			zap.Int("userID", secretItem.UserID),
