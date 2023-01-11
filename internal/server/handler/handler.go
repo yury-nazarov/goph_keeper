@@ -19,14 +19,7 @@ import (
 	"go.uber.org/zap"
 )
 
-// Общие переменные для хендлеров
-var (
-	err    error
-	err401 *tools.Err401
-	err404 *tools.Err404
-	err409 *tools.Err409
-	err500 *tools.Err500
-)
+var err    error
 
 // Controller - контроллер обработки HTTP запросов
 type Controller struct {
@@ -65,14 +58,19 @@ func (c *Controller) SignUp(w http.ResponseWriter, r *http.Request) {
 	}
 	// Регестрируем нового пользователя, добавляя в структурку поля ID и Token,
 	err = c.auth.RegisterUser(r.Context(), &user)
-	if errors.As(err, &err409) {
+	if errors.Is(err, auth.AuthenticationError) {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	if errors.Is(err, auth.LoginAlreadyExist) {
 		w.WriteHeader(http.StatusConflict)
 		return
 	}
-	if errors.As(err, &err500) {
+	if errors.Is(err, auth.InternalServerError) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+
 	// Устанавливаем токен в заголовок и отвечаем клиенту
 	w.Header().Set("Authorization", user.Token)
 	w.WriteHeader(http.StatusCreated)
@@ -88,11 +86,11 @@ func (c *Controller) SignIn(w http.ResponseWriter, r *http.Request) {
 	}
 	// Аутентифицируем пользователя
 	err = c.auth.UserLogIn(r.Context(), &user)
-	if errors.As(err, &err401) {
+	if errors.Is(err, auth.AuthenticationError) {
 		w.WriteHeader(http.StatusForbidden)
 		return
 	}
-	if errors.As(err, &err500) {
+	if errors.Is(err, auth.InternalServerError) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -106,11 +104,11 @@ func (c *Controller) SignOut(w http.ResponseWriter, r *http.Request) {
 	token := r.Header.Get("Authorization")
 	// Удалить по токену запись в сессиях
 	err = c.auth.LogOutUser(r.Context(), token)
-	if errors.As(err, &err404) {
+	if errors.Is(err, auth.TokenNotFound) {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
-	if errors.As(err, &err500) {
+	if errors.Is(err, auth.InternalServerError) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -120,19 +118,19 @@ func (c *Controller) SignOut(w http.ResponseWriter, r *http.Request) {
 
 // SecretNew - создание нового секрета
 func (c *Controller) SecretNew(w http.ResponseWriter, r *http.Request) {
-	var secret models.Secret
+	var item models.Secret
 	// Извлекаем name, data, description из HTTP запроса
-	if err = tools.JSONUnmarshal(r, &secret); err != nil {
+	if err = tools.JSONUnmarshal(r, &item); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	// Получаем userID который добавляем в контекст из middleware
-	secret.UserID = r.Context().Value("userID").(int)
-	c.log.Debug("handler.SecretNew", zap.String("struct debug", fmt.Sprintf("%+v", secret)))
+	item.UserID = r.Context().Value("userID").(int)
+	c.log.Debug("handler.SecretNew", zap.String("struct debug", fmt.Sprintf("%+v", item)))
 
 	// Оправляем в слой бизнес логики для создания секрета в БД
-	err = c.secret.Create(r.Context(), secret)
-	if errors.As(err, &err500) {
+	err = c.secret.Create(r.Context(), item)
+	if errors.Is(err, secret.InternalServerError) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -149,7 +147,7 @@ func (c *Controller) SecretList(w http.ResponseWriter, r *http.Request) {
 	c.log.Debug("handler.SecretList", zap.Int("userID", userID))
 
 	secrets, err = c.secret.List(r.Context(), userID)
-	if errors.As(err, &err500) {
+	if errors.Is(err, secret.InternalServerError) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -195,11 +193,11 @@ func (c *Controller) GetSecretByID(w http.ResponseWriter, r *http.Request) {
 
 	// Получаем секрет
 	item, err = c.secret.GetByID(r.Context(), secretID)
-	if errors.As(err, &err404) {
+	if errors.Is(err, secret.ItemNotFound) {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
-	if errors.As(err, &err500) {
+	if errors.Is(err, secret.InternalServerError) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -255,15 +253,15 @@ func (c *Controller) UpdateSecretByID(w http.ResponseWriter, r *http.Request) {
 
 	// Отправляем в слой бизнесл логики для доп. проверок и обновления
 	err = c.secret.PutByID(r.Context(), secretItem)
-	if errors.As(err, &err401) {
+	if errors.Is(err, secret.AuthenticationError) {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-	if errors.As(err, &err404) {
+	if errors.Is(err, secret.ItemNotFound) {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
-	if errors.As(err, &err500) {
+	if errors.Is(err, secret.InternalServerError) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

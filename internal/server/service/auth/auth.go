@@ -4,17 +4,23 @@ import (
 	"context"
 	"crypto/md5"
 	"crypto/rand"
+	"errors"
 	"fmt"
 
 	"github.com/yury-nazarov/goph_keeper/internal/models"
 	"github.com/yury-nazarov/goph_keeper/internal/server/repository/inmemory"
 	"github.com/yury-nazarov/goph_keeper/internal/server/repository/postgres"
-	"github.com/yury-nazarov/goph_keeper/pkg/tools"
 
 	"go.uber.org/zap"
 )
 
 // Модуль для работы с авторизацией и аутентификацией пользователей
+
+var TokenNotFound = errors.New("TokenNotFound") // 404
+var AuthenticationError = errors.New("AuthenticationError")  // 401
+var LoginAlreadyExist = errors.New("LoginAlreadyExist") // 409
+var InternalServerError = errors.New("InternalServerError") // 500
+
 
 type Auth interface {
 	RegisterUser(ctx context.Context, user *models.User) error
@@ -46,7 +52,7 @@ func (a *auth) RegisterUser(ctx context.Context, user *models.User) error {
 		a.log.Info("Empty username or password",
 			zap.String("method", "Auth.RegisterUser"),
 			zap.String("user.Login", user.Login))
-		return tools.NewErr401("")
+		return AuthenticationError
 	}
 
 	// Проверяем наличие логина в БД
@@ -56,14 +62,14 @@ func (a *auth) RegisterUser(ctx context.Context, user *models.User) error {
 			zap.String("method", "Auth.RegisterUser"),
 			zap.String("user.Login", user.Login),
 			zap.String("error", err.Error()))
-		return tools.NewErr500("")
+		return InternalServerError
 	}
 	if ok {
 		a.log.Info("Сan`t register new user",
 			zap.String("method", "Auth.RegisterUser"),
 			zap.String("error", "username already exists"),
 			zap.String("user.Login", user.Login))
-		return tools.NewErr409("")
+		return LoginAlreadyExist
 	}
 
 	// Создаем пользователя
@@ -74,7 +80,7 @@ func (a *auth) RegisterUser(ctx context.Context, user *models.User) error {
 			zap.String("method", "Auth.RegisterUser"),
 			zap.String("user.Login", user.Login),
 			zap.String("error", err.Error()))
-		return tools.NewErr500("")
+		return InternalServerError
 	}
 
 	// Создаем токен
@@ -84,7 +90,7 @@ func (a *auth) RegisterUser(ctx context.Context, user *models.User) error {
 			zap.String("method", "Auth.RegisterUser"),
 			zap.String("user.Login", user.Login),
 			zap.String("error", err.Error()))
-		return tools.NewErr500("")
+		return InternalServerError
 	}
 
 	// Логинем пользователя
@@ -94,7 +100,7 @@ func (a *auth) RegisterUser(ctx context.Context, user *models.User) error {
 			zap.String("method", "Auth.RegisterUser"),
 			zap.String("user.Login", user.Login),
 			zap.String("error", err.Error()))
-		return tools.NewErr500("")
+		return InternalServerError
 	}
 	// Успешное создане пользователя
 	a.log.Info("Success registered new user",
@@ -124,7 +130,7 @@ func (a *auth) UserLogIn(ctx context.Context, user *models.User) error {
 			zap.String("method", "Auth.UserLogIn"),
 			zap.String("user.Login", user.Login),
 			zap.String("error", err.Error()))
-		return tools.NewErr401("")
+		return AuthenticationError
 	}
 
 	// Создаем токен
@@ -134,7 +140,7 @@ func (a *auth) UserLogIn(ctx context.Context, user *models.User) error {
 			zap.String("method", "Auth.UserLogIn"),
 			zap.String("user.Login", user.Login),
 			zap.String("error", err.Error()))
-		return tools.NewErr500("")
+		return InternalServerError
 	}
 
 	// Логинем пользователя
@@ -144,7 +150,7 @@ func (a *auth) UserLogIn(ctx context.Context, user *models.User) error {
 			zap.String("method", "Auth.UserLogIn"),
 			zap.String("user.Login", user.Login),
 			zap.String("error", err.Error()))
-		return tools.NewErr500("")
+		return InternalServerError
 	}
 	// Успешный логин
 	a.log.Info("Success LogIn to system",
@@ -165,7 +171,7 @@ func (a *auth) LogOutUser(ctx context.Context, token string) error {
 			zap.String("method", "Auth.LogOutUser"),
 			zap.String("token", token),
 			zap.String("error", err.Error()))
-		return tools.NewErr404("")
+		return TokenNotFound
 	}
 
 	// Если есть, удаляем сессию
@@ -176,7 +182,7 @@ func (a *auth) LogOutUser(ctx context.Context, token string) error {
 			zap.Int("user.ID", userID),
 			zap.String("user.Token", token),
 			zap.String("error", err.Error()))
-		return tools.NewErr500("")
+		return InternalServerError
 	}
 	// Успешный логаут
 	a.log.Info("Success logOut",
