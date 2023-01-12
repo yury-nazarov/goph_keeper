@@ -1,0 +1,12 @@
+version: '3.5'
+
+services:
+  postgres:
+    container_name: gk_postgres
+    image: postgres:14.5
+    environment:
+      - POSTGRES_USER=gop_keeper_dev
+      - POSTGRES_PASSWORD=gop_keeper_dev
+      - POSTGRES_DB=gop_keeper_dev
+    ports:
+      - "5432:5432"
