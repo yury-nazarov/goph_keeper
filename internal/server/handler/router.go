@@ -6,27 +6,27 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func NewRouter(c *Controller) http.Handler {
+func NewRouter(authController *authController, secretController *secretController, msController *msController) http.Handler {
 	r := chi.NewRouter()
 
 	// Роутинг
-	r.Get("/version", c.Version)
+	r.Get("/version", msController.Version)
 	r.Route("/api/v1", func(r chi.Router) {
 		r.Route("/auth", func(r chi.Router) {
-			r.Post("/signup", c.SignUp)
-			r.Post("/signin", c.SignIn)
+			r.Post("/signup", authController.SignUp)
+			r.Post("/signin", authController.SignIn)
 			r.Group(func(r chi.Router) {
-				r.Use(mwTokenAuth(c))
-				r.Delete("/signout", c.SignOut)
+				r.Use(mwTokenAuth(authController))
+				r.Delete("/signout", authController.SignOut)
 			})
 		})
 		r.Route("/secret", func(r chi.Router) {
-			r.Use(mwTokenAuth(c))
-			r.Post("/new", c.SecretNew)
-			r.Get("/list", c.SecretList)
-			r.Get("/{secretID}", c.GetSecretByID)
-			r.Put("/update", c.UpdateSecretByID)
-			r.Delete("/delete/{secretID}", c.DeleteSecretByID)
+			r.Use(mwTokenAuth(authController))
+			r.Post("/new", secretController.SecretNew)
+			r.Get("/list", secretController.SecretList)
+			r.Get("/{secretID}", secretController.GetSecretByID)
+			r.Put("/update", secretController.UpdateSecretByID)
+			r.Delete("/delete/{secretID}", secretController.DeleteSecretByID)
 		})
 	})
 	return r

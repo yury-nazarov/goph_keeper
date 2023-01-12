@@ -25,6 +25,7 @@ GophKeeper представляет собой клиент-серверную �
 
 # Локальный запуск приложения
 
+
 Запустить Psql из docker-compose в директории `deployments`
 ```shell
 docker-compose up
@@ -52,6 +53,12 @@ go run cmd/server/main.go -a 127.0.0.1 -p 8080 -mt 002 -mf "./internal/migration
 ```shell
 export MIGRATE_TO="002"
 export MIGRATE_FILE="./internal/migrations"
+```
+
+Не обязательные параметры
+```shell
+export GK_VERSION="v0.0.X"
+export GK_STAGE="prod" # dev, prod, stage, test, etc
 ```
 
 # HTTP API сервиса

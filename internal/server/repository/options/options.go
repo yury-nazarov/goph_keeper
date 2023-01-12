@@ -14,6 +14,7 @@ type Config struct {
 	DB          string `env:"DATABASE_URI"`
 	MigrateTo   string `env:"MIGRATE_TO"`
 	MigrateFile string `env:"MIGRATE_FILE"`
+	Version 	string
 }
 
 func NewConfig() (Config, error) {

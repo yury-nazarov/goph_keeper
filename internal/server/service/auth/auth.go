@@ -36,11 +36,11 @@ type auth struct {
 }
 
 // New создает объект на основе стурктуры auth
-func New(log *zap.Logger, sessions inmemory.Sessions, db postgres.DB) *auth {
+func New( db postgres.DB, sessions inmemory.Sessions, log *zap.Logger) *auth {
 	a := &auth{
-		log:      log,
-		sessions: sessions,
 		db:       db,
+		sessions: sessions,
+		log:      log,
 	}
 	return a
 }

@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
+	"strings"
 
 	"github.com/yury-nazarov/goph_keeper/internal/server/handler"
 	"github.com/yury-nazarov/goph_keeper/internal/server/repository/inmemory"
@@ -26,6 +28,12 @@ var (
 	err      error
 )
 
+var (
+	version = "v0.0.2"
+	stage = "develop"
+)
+
+
 func main() {
 	// Инициируем логер c нужным конфигом
 	log = logger.New()
@@ -35,10 +43,25 @@ func main() {
 	if err != nil {
 		log.Fatal("can't get config", zap.String("error", err.Error()))
 	}
+	cfg.Version = strings.Join(serviceInfo(), " ")
 
 	// Инициируем и запускаем приложение
 	app = application.New(log, cfg, onStart, onShutdown)
 	app.Run()
+}
+
+// serviceInfo получает мета информацию про сервис из переменных окружения
+// 			   в противном случае используем параметры по умолчанию
+func serviceInfo() (info []string) {
+	if len(os.Getenv("GK_VERSION")) != 0{
+		version = os.Getenv("GK_VERSION")
+	}
+	if len(os.Getenv("GK_STAGE")) != 0{
+		stage = os.Getenv("GK_STAGE")
+	}
+
+	info = append(info, version, stage)
+	return info
 }
 
 // onStart запускает проект
@@ -57,14 +80,21 @@ func onStart() {
 	}
 	app.AddClosers(sessions)
 
-	// Инициируем слой с бизнес логикой: Авторизация
-	auth := auth.New(log, sessions, db)
-	// Инициируем слой с бизнес логикой: Работа с секретами
-	secret := secret.NewSecret(db, log)
+	// Инициируем слои отвечающие за логику обработки Авторизации
+	authService := auth.New(db, sessions, log)
+	authController := handler.NewAuthController(authService, sessions, log)
 
-	// Инициируем хендлер контроллер и роутер
-	c := handler.NewController(db, sessions, cfg, log, auth, secret)
-	r := handler.NewRouter(c)
+	// Инициируем слои отвечающие за логику обработки Секретов
+	secretService := secret.New(db, log)
+	secretController := handler.NewSecretController(secretService, log)
+
+	// Инициируем служебный контроллер
+	// В случае с
+	serviceInfo := []string{version, stage}
+	msController := handler.NewMSController(serviceInfo)
+
+	// Передаем в роутер
+	r := handler.NewRouter(authController, secretController, msController)
 
 	// Запускаем веб сервер
 	go func() {

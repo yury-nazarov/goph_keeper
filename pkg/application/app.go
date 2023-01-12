@@ -1,7 +1,6 @@
 package application
 
 import (
-	"fmt"
 	"io"
 	"os"
 	"os/signal"
@@ -45,7 +44,10 @@ func New(log *zap.Logger, cfg options.Config, onStart func(), onShutDown func())
 
 // Run запускает приложение
 func (a *Application) Run() {
-	a.log.Info(fmt.Sprintf("The app was start. Listing socket: %s:%d", a.cfg.Host, a.cfg.Port))
+	a.log.Info("The app was start",
+		zap.String("Version", a.cfg.Version),
+		zap.String("Listing address", a.cfg.Host),
+		zap.Int("port", a.cfg.Port))
 	if a.onStart != nil {
 		a.onStart()
 	}

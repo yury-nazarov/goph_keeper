@@ -31,7 +31,7 @@ type secret struct {
 	log *zap.Logger
 }
 
-func NewSecret(db postgres.DB, logger *zap.Logger) *secret {
+func New(db postgres.DB, logger *zap.Logger) *secret {
 	s := &secret{
 		db:  db,
 		log: logger,
