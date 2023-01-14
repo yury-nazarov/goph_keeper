@@ -14,11 +14,11 @@ import (
 type authController struct {
 	sessions Sessions
 	log      *zap.Logger
-	auth     auth.Auth
+	auth     Auth
 }
 
 // NewAuthController создает новый экземпляр контроллера который передаем в роутер
-func NewAuthController(auth auth.Auth, sessions Sessions, log *zap.Logger) *authController {
+func NewAuthController(auth Auth, sessions Sessions, log *zap.Logger) *authController {
 	c := &authController{
 		auth:     auth,
 		sessions: sessions,

@@ -10,14 +10,6 @@ import (
 	"go.uber.org/zap"
 )
 
-type Secret interface {
-	Create(ctx context.Context, secret models.Secret) error
-	List(ctx context.Context, userID int) ([]models.Secret, error)
-	GetByID(ctx context.Context, secretID int) (models.Secret, error)
-	PutByID(ctx context.Context, item models.Secret) error
-	DeleteByID(ctx context.Context, secretID int) error
-}
-
 var AuthenticationError = errors.New("AuthenticationError")
 var ItemNotFound = errors.New("SecretNotFound")
 var InternalServerError = errors.New("InternalServerError")

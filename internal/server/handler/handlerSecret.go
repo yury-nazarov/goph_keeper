@@ -19,11 +19,11 @@ import (
 type secretController struct {
 	cgf      options.Config
 	log      *zap.Logger
-	secret   secret.Secret
+	secret   Secret
 }
 
 // NewSecretController создает новый экземпляр контроллера который передаем в роутер
-func NewSecretController( secret secret.Secret, log *zap.Logger) *secretController {
+func NewSecretController(secret Secret, log *zap.Logger) *secretController {
 	c := &secretController{
 		secret:   secret,
 		log:      log,

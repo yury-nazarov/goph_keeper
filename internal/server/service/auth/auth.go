@@ -13,13 +13,6 @@ import (
 
 // Модуль для работы с авторизацией и аутентификацией пользователей
 
-type Auth interface {
-	RegisterUser(ctx context.Context, user *models.User) error
-	UserLogIn(ctx context.Context, user *models.User) error
-	LogOutUser(ctx context.Context, token string) error
-}
-
-
 // auth структурка для работы модуля аутентификации/авторизации
 type auth struct {
 	log      *zap.Logger
