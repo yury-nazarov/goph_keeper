@@ -18,11 +18,10 @@ import (
 	"go.uber.org/zap"
 )
 
+
 // объявляем используемые зависимости и общие переменные
 var (
 	app      *application.Application
-	db       postgres.DB
-	sessions inmemory.Sessions
 	log      *zap.Logger
 	cfg      options.Config
 	err      error
@@ -32,7 +31,6 @@ var (
 	version = "v0.0.2"
 	stage = "develop"
 )
-
 
 func main() {
 	// Инициируем логер c нужным конфигом
@@ -67,14 +65,14 @@ func serviceInfo() (info []string) {
 // onStart запускает проект
 func onStart() {
 	// Инициализируем подключение к БД
-	db, err = postgres.New(log, cfg)
+	db, err := postgres.New(log, cfg)
 	if err != nil {
 		log.Fatal("can't init DB storage", zap.String("error", err.Error()))
 	}
 	app.AddClosers(db)
 
 	// Инициализируем подключение к кешу сессий для для хранения токенов
-	sessions, err = inmemory.NewSessions(log)
+	sessions, err := inmemory.NewSessions(log)
 	if err != nil {
 		log.Fatal("can't init session cache", zap.String("error", err.Error()))
 	}

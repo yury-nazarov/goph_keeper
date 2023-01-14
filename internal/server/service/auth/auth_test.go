@@ -57,7 +57,6 @@ func (sts *StorageTestSuite) Test_auth_RegisterUser() {
 			},
 			wantErr: true,
 		},
-		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
 		sts.Run(tt.name, func() {
@@ -117,7 +116,6 @@ func (sts *StorageTestSuite) Test_auth_UserLogIn() {
 			},
 			wantErr: true,
 		},
-		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
 		sts.Run(tt.name, func() {
@@ -155,7 +153,6 @@ func (sts *StorageTestSuite) Test_auth_UserLogIn() {
 //				token: "123123",
 //			},
 //		},
-//		// TODO: Add test cases.
 //	}
 //	for _, tt := range tests {
 //		sts.Run(tt.name, func() {
@@ -183,7 +180,6 @@ func (sts *StorageTestSuite) Test_auth_createToken() {
 			want:    "123",
 			wantErr: false,
 		},
-		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
 		sts.Run(tt.name, func() {
@@ -226,7 +222,6 @@ func (sts *StorageTestSuite) Test_auth_hashPassword() {
 			},
 			want: "202cb962ac59075b964b07152d234b70",
 		},
-		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
 		sts.Run(tt.name, func() {

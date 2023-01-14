@@ -4,23 +4,14 @@ import (
 	"context"
 	"crypto/md5"
 	"crypto/rand"
-	"errors"
 	"fmt"
 
 	"github.com/yury-nazarov/goph_keeper/internal/models"
-	"github.com/yury-nazarov/goph_keeper/internal/server/repository/inmemory"
-	"github.com/yury-nazarov/goph_keeper/internal/server/repository/postgres"
 
 	"go.uber.org/zap"
 )
 
 // Модуль для работы с авторизацией и аутентификацией пользователей
-
-var TokenNotFound = errors.New("TokenNotFound") // 404
-var AuthenticationError = errors.New("AuthenticationError")  // 401
-var LoginAlreadyExist = errors.New("LoginAlreadyExist") // 409
-var InternalServerError = errors.New("InternalServerError") // 500
-
 
 type Auth interface {
 	RegisterUser(ctx context.Context, user *models.User) error
@@ -28,15 +19,16 @@ type Auth interface {
 	LogOutUser(ctx context.Context, token string) error
 }
 
+
 // auth структурка для работы модуля аутентификации/авторизации
 type auth struct {
 	log      *zap.Logger
-	sessions inmemory.Sessions
-	db       postgres.DB
+	sessions Sessions
+	db       DB
 }
 
 // New создает объект на основе стурктуры auth
-func New( db postgres.DB, sessions inmemory.Sessions, log *zap.Logger) *auth {
+func New(db DB, sessions Sessions, log *zap.Logger) *auth {
 	a := &auth{
 		db:       db,
 		sessions: sessions,
@@ -51,7 +43,8 @@ func (a *auth) RegisterUser(ctx context.Context, user *models.User) error {
 	if len(user.Login) == 0 || len(user.Password) == 0 {
 		a.log.Info("Empty username or password",
 			zap.String("method", "Auth.RegisterUser"),
-			zap.String("user.Login", user.Login))
+			zap.String("user.Login", user.Login),
+			zap.String("UUID", "123"))
 		return AuthenticationError
 	}
 

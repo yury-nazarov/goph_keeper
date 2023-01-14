@@ -7,8 +7,6 @@ import (
 	"fmt"
 
 	"github.com/yury-nazarov/goph_keeper/internal/models"
-	"github.com/yury-nazarov/goph_keeper/internal/server/repository/postgres"
-
 	"go.uber.org/zap"
 )
 
@@ -23,15 +21,14 @@ type Secret interface {
 var AuthenticationError = errors.New("AuthenticationError")
 var ItemNotFound = errors.New("SecretNotFound")
 var InternalServerError = errors.New("InternalServerError")
-
 var err error
 
 type secret struct {
-	db  postgres.DB
+	db  DB
 	log *zap.Logger
 }
 
-func New(db postgres.DB, logger *zap.Logger) *secret {
+func New(db DB, logger *zap.Logger) *secret {
 	s := &secret{
 		db:  db,
 		log: logger,

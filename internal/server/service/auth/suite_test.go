@@ -14,14 +14,14 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-// TestDB интефейс расширяет наш DB до нужных методов
+// TestDB - при необходимости расширяет DB до нужных методов
 type TestDB interface {
-	postgres.DB
+	DB
 }
 
-// TestSession интефейс расширяет наш DB до нужных методов
+// TestSession - при необходимости расширяет Sessions до нужных методов
 type TestSession interface {
-	inmemory.Sessions
+	Sessions
 }
 
 // StorageTestSuite Позволяет агрегировать тесты
@@ -36,9 +36,9 @@ type StorageTestSuite struct {
 
 // SetupTest
 func (sts *StorageTestSuite) SetupTest() {
-	logger := logger.New()
+	log := logger.New()
 	storageContainer := testhelpers.NewTestDatabase(sts.T())
-	session, _ := inmemory.NewSessions(logger)
+	session, _ := inmemory.NewSessions(log)
 
 	// Конфиг для подключения к БД
 	opts := options.Config{
@@ -52,7 +52,7 @@ func (sts *StorageTestSuite) SetupTest() {
 			"postgres"),
 	}
 
-	store, err := postgres.New(logger, opts)
+	store, err := postgres.New(log, opts)
 	require.NoError(sts.T(), err)
 
 	sts.TestDB = store

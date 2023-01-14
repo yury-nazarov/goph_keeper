@@ -4,7 +4,6 @@ import (
 	"errors"
 
 	"github.com/yury-nazarov/goph_keeper/internal/models"
-	"github.com/yury-nazarov/goph_keeper/internal/server/repository/inmemory"
 	"github.com/yury-nazarov/goph_keeper/internal/server/service/auth"
 	"net/http"
 
@@ -13,13 +12,13 @@ import (
 
 // AuthController - контроллер обработки HTTP запросов для модуля аутентификаци
 type authController struct {
-	sessions inmemory.Sessions
+	sessions Sessions
 	log      *zap.Logger
 	auth     auth.Auth
 }
 
 // NewAuthController создает новый экземпляр контроллера который передаем в роутер
-func NewAuthController(auth auth.Auth, sessions inmemory.Sessions, log *zap.Logger) *authController {
+func NewAuthController(auth auth.Auth, sessions Sessions, log *zap.Logger) *authController {
 	c := &authController{
 		auth:     auth,
 		sessions: sessions,
