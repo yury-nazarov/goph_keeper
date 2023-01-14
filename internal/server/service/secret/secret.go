@@ -10,11 +10,6 @@ import (
 	"go.uber.org/zap"
 )
 
-var AuthenticationError = errors.New("AuthenticationError")
-var ItemNotFound = errors.New("SecretNotFound")
-var InternalServerError = errors.New("InternalServerError")
-var err error
-
 type secret struct {
 	db  DB
 	log *zap.Logger

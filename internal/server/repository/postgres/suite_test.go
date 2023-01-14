@@ -13,14 +13,14 @@ import (
 )
 
 // Интекфейс TestStorage расширяет наш DB до нужных методов
-type TestStorager interface {
+type TestStorage interface {
 	DB
 }
 
 // Позволяет агрегировать тесты
 type StorageTestSuite struct {
 	suite.Suite
-	TestStorager
+	TestStorage
 	container *testhelpers.TestDatabase
 }
 
@@ -46,7 +46,7 @@ func (sts *StorageTestSuite) SetupTest() {
 	store, err := New(logger, opts)
 	require.NoError(sts.T(), err)
 
-	sts.TestStorager = store
+	sts.TestStorage = store
 	sts.container = storageContainer
 }
 

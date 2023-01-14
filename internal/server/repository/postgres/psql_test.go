@@ -35,7 +35,7 @@ func (sts *StorageTestSuite) Test_psql_CreateUser() {
 	}
 	for _, tt := range tests {
 		sts.Run(tt.name, func() {
-			p := sts.TestStorager
+			p := sts.TestStorage
 			got, err := p.CreateUser(tt.args.ctx, tt.args.login, tt.args.password)
 			if (err != nil) != tt.wantErr {
 				sts.T().Errorf("CreateUser() error = %v, wantErr %v", err, tt.wantErr)
@@ -81,7 +81,7 @@ func (sts *StorageTestSuite) Test_psql_UserExist() {
 	}
 	for _, tt := range tests {
 		sts.Run(tt.name, func() {
-			p := sts.TestStorager
+			p := sts.TestStorage
 			got, err := p.UserExist(tt.args.ctx, tt.args.login)
 			if (err != nil) != tt.wantErr {
 				sts.T().Errorf("UserExist() error = %v, wantErr %v", err, tt.wantErr)
@@ -121,7 +121,7 @@ func (sts *StorageTestSuite) Test_psql_UserIsValid() {
 	}
 	for _, tt := range tests {
 		sts.Run(tt.name, func() {
-			p := sts.TestStorager
+			p := sts.TestStorage
 			got, err := p.UserIsValid(tt.args.ctx, tt.args.user)
 			if (err != nil) != tt.wantErr {
 				sts.T().Errorf("UserIsValid() error = %v, wantErr %v", err, tt.wantErr)
@@ -165,7 +165,7 @@ func (sts *StorageTestSuite) Test_psql_AddSecret() {
 	}
 	for _, tt := range tests {
 		sts.Run(tt.name, func() {
-			p := sts.TestStorager
+			p := sts.TestStorage
 			got, err := p.AddSecret(tt.args.ctx, tt.args.secret)
 			if (err != nil) != tt.wantErr {
 				sts.T().Errorf("AddSecret() error = %v, wantErr %v", err, tt.wantErr)
@@ -211,7 +211,7 @@ func (sts *StorageTestSuite) Test_psql_GetSecretByID() {
 	}
 	for _, tt := range tests {
 		sts.Run(tt.name, func() {
-			p := sts.TestStorager
+			p := sts.TestStorage
 			got, err := p.GetSecretByID(tt.args.ctx, tt.args.secret)
 			if (err != nil) != tt.wantErr {
 				sts.T().Errorf("GetSecretByID() error = %v, wantErr %v", err, tt.wantErr)
@@ -263,7 +263,7 @@ func (sts *StorageTestSuite) Test_psql_GetSecretList() {
 	}
 	for _, tt := range tests {
 		sts.Run(tt.name, func() {
-			p := sts.TestStorager
+			p := sts.TestStorage
 			gotSecretList, err := p.GetSecretList(tt.args.ctx, tt.args.userID)
 			if (err != nil) != tt.wantErr {
 				sts.T().Errorf("GetSecretList() error = %v, wantErr %v", err, tt.wantErr)
@@ -302,7 +302,7 @@ func (sts *StorageTestSuite) Test_psql_UpdateSecretByID() {
 	}
 	for _, tt := range tests {
 		sts.Run(tt.name, func() {
-			p := sts.TestStorager
+			p := sts.TestStorage
 			if err := p.UpdateSecretByID(tt.args.ctx, tt.args.secret); (err != nil) != tt.wantErr {
 				sts.T().Errorf("UpdateSecretByID() error = %v, wantErr %v", err, tt.wantErr)
 			}
@@ -335,7 +335,7 @@ func (sts *StorageTestSuite) Test_psql_DeleteSecretByID() {
 	}
 	for _, tt := range tests {
 		sts.Run(tt.name, func() {
-			p := sts.TestStorager
+			p := sts.TestStorage
 			if err := p.DeleteSecretByID(tt.args.ctx, tt.args.secret); (err != nil) != tt.wantErr {
 				sts.T().Errorf("DeleteSecretByID() error = %v, wantErr %v", err, tt.wantErr)
 			}
