@@ -11,7 +11,7 @@ var secretGetCmd = &cobra.Command{
 	Short: "Get of secret by ID",
 	Long:  `Get of secret by ID`,
 	Run: func(cmd *cobra.Command, args []string) {
-		status, secret, err := App.Secret.Get(App.Item.ID)
+		status, secret, err := App.Secret.Get(App.Item.ID, App.Crypto)
 		if err != nil {
 			fmt.Printf("get secret fail: %s", err)
 		}

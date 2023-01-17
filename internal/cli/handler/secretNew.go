@@ -10,7 +10,7 @@ var secretNewCmd = &cobra.Command{
 	Short: "Create new secret",
 	Long:  `Create new secret`,
 	Run: func(cmd *cobra.Command, args []string) {
-		status, err := App.Secret.New(App.Item)
+		status, err := App.Secret.New(App.Item, App.Crypto)
 		if err != nil {
 			fmt.Printf("create secret fail: %s", err)
 		}

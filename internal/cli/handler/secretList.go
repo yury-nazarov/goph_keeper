@@ -11,7 +11,7 @@ var secretListCmd = &cobra.Command{
 	Short: "List of secret",
 	Long:  `List of secret`,
 	Run: func(cmd *cobra.Command, args []string) {
-		status, secrets, err := App.Secret.List()
+		status, secrets, err := App.Secret.List(App.Crypto)
 		if err != nil {
 			fmt.Printf("list secret fail: %s", err)
 		}

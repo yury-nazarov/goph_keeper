@@ -10,7 +10,7 @@ var secretUpdateCmd = &cobra.Command{
 	Short: "Update secret by ID",
 	Long:  `Update secret by ID`,
 	Run: func(cmd *cobra.Command, args []string) {
-		status, err := App.Secret.Update(App.Item)
+		status, err := App.Secret.Update(App.Item, App.Crypto)
 		if err != nil {
 			fmt.Printf("update secret fail: %s", err)
 		}

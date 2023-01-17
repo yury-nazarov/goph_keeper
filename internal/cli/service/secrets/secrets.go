@@ -4,14 +4,17 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/fatih/color"
-	"github.com/rodaine/table"
 	"io"
+	"log"
 	"net/http"
 
 	"github.com/yury-nazarov/goph_keeper/internal/cli/repository/client"
 	"github.com/yury-nazarov/goph_keeper/internal/cli/repository/token"
+	"github.com/yury-nazarov/goph_keeper/internal/cli/service/crypto"
 	"github.com/yury-nazarov/goph_keeper/internal/models"
+
+	"github.com/fatih/color"
+	"github.com/rodaine/table"
 )
 
 type Token interface {
@@ -22,6 +25,8 @@ type Token interface {
 type HTTPClient interface {
 	Call(method string, token string, serverPath string, requestBody io.Reader) (httpStatus string, responseBody []byte, respToken string, err error)
 }
+
+
 
 type secret struct {
 	token 		Token
@@ -44,7 +49,10 @@ func New() (*secret, error) {
 	return s, nil
 }
 
-func (s *secret) New(item models.Secret) (string, error) {
+func (s *secret) New(item models.Secret, crypto crypto.Crypto) (string, error) {
+	// Шифруем секрет
+	item.Data = crypto.Encrypt([]byte(item.Data))
+
 	// Сериализуем пришедшие данные
 	body, err := json.Marshal(&item)
 	if err != nil {
@@ -65,7 +73,7 @@ func (s *secret) New(item models.Secret) (string, error) {
 
 }
 
-func (s *secret) List() (string, []models.Secret, error){
+func (s *secret) List(crypto crypto.Crypto) (string, []models.Secret, error){
 	// Получаем токен
 	token, err := s.token.Get()
 	if err != nil {
@@ -86,13 +94,24 @@ func (s *secret) List() (string, []models.Secret, error){
 			return "", nil, err
 		}
 
-		return hs, items, nil
+		// Расшифровываем содержимое
+		var result []models.Secret
+		for _, item := range items {
+			fmt.Println(item.Data)
+			item.Data, err = crypto.Decrypt(item.Data)
+			fmt.Println(item.Data)
+			result = append(result, item)
+			if err != nil {
+				log.Printf("can't decrypt message id: %d", item.ID)
+			}
+		}
+		return hs, result, nil
 	}
 	return hs, nil, nil
 }
 
 
-func (s *secret) Get(secretID int)  (string, []models.Secret, error){
+func (s *secret) Get(secretID int, crypto crypto.Crypto)  (string, []models.Secret, error){
 	// Получаем токен
 	token, err := s.token.Get()
 	if err != nil {
@@ -112,6 +131,11 @@ func (s *secret) Get(secretID int)  (string, []models.Secret, error){
 		if err = json.Unmarshal(responseBody, &item); err != nil {
 			return "", nil, err
 		}
+		item.Data, err = crypto.Decrypt(item.Data)
+		if err != nil {
+			log.Printf("can't decrypt message id: %d", item.ID)
+		}
+
 		items := []models.Secret{item}
 
 		return hs, items, nil
@@ -138,7 +162,7 @@ func (s *secret) Delete(secretID int) (string, error){
 }
 
 
-func (s *secret) Update(item models.Secret) (string, error){
+func (s *secret) Update(item models.Secret, crypto crypto.Crypto) (string, error){
 	// Получаем токен
 	token, err := s.token.Get()
 	if err != nil {
@@ -158,7 +182,6 @@ func (s *secret) Update(item models.Secret) (string, error){
 		return "", err
 	}
 
-	//
 	//secret - секрет измененный пользователей
 	//originSecret - секрет полученый из БД.
 	// Для него обновляем поля:
@@ -172,8 +195,8 @@ func (s *secret) Update(item models.Secret) (string, error){
 	if originSecret.Description != item.Description && len(item.Description) > 0 {
 		originSecret.Description = item.Description
 	}
-	//// Шифруем секрет
-	//originSecret.Data = ct.Encrypt([]byte(originSecret.Data))
+	// Шифруем секрет
+	originSecret.Data = crypto.Encrypt([]byte(originSecret.Data))
 
 	// Сериализуем originSecret
 	body, err := json.Marshal(&originSecret)
