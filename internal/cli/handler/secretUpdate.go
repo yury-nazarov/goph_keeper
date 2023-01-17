@@ -12,7 +12,7 @@ var secretUpdateCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		status, err := App.Secret.Update(App.Item)
 		if err != nil {
-			fmt.Printf("create secret fail: %s", err)
+			fmt.Printf("update secret fail: %s", err)
 		}
 		// Статус обработки запроса
 		fmt.Println(status)

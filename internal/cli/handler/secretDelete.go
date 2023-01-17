@@ -13,7 +13,7 @@ var secretDeleteCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		status, err := App.Secret.Delete(App.Item.ID)
 		if err != nil {
-			fmt.Printf("create secret fail: %s", err)
+			fmt.Printf("delete secret fail: %s", err)
 		}
 		// Статус обработки запроса
 		fmt.Println(status)
