@@ -1,24 +1,18 @@
 package handler
 
-import (
-	"github.com/spf13/cobra"
-	"github.com/yury-nazarov/goph_keeper/internal/models"
-)
+import "C"
 
 // Переменные для мапинга из флагов
-var (
-	user   models.User
-	item models.Secret
-	id     int
-)
 
-var Cmd = &cobra.Command{
-	Use:   "gkc",
-	Short: "Goph Keeper cli",
-	Long:  `Goph Keeper command line interface`,
-}
+//var Cmd = &cobra.Command{
+//	Use:   "gkc",
+//	Short: "Goph Keeper cli",
+//	Long:  `Goph Keeper command line interface`,
+//}
 
 
+var App = New()
 func Executor() error {
-	return Cmd.Execute()
+
+	return App.Cmd.Execute()
 }
